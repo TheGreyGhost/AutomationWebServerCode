@@ -1,0 +1,12 @@
+Basic ideas:
+First up- get UDP/IP communication between Arduino and Raspberry Pi working.  W
+
+Datastream port
+
+Main background functionality:
+Poll for current status as required, also parameter settings as requested
+Replicate log data from Arduino into SQL database; auto fetch and heal
+
+Specialised Commands through command interface
+
+
