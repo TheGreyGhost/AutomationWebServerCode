@@ -1,0 +1,9 @@
+Struggling with permissions
+https://www.linode.com/community/questions/17036/how-do-i-fix-a-1045-error-when-trying-to-log-into-phpmyadmin
+
+https://www.a2hosting.com/kb/developer-corner/mysql/managing-mysql-databases-and-users-from-the-command-line
+
+Created db called
+AutomationServerRealtime
+setting up a table PoolHeaterSensorValues
+storage engine Memory
