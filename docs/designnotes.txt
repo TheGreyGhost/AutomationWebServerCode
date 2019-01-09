@@ -9,4 +9,8 @@ Replicate log data from Arduino into SQL database; auto fetch and heal
 
 Specialised Commands through command interface
 
+run a python script as daemon, to keep mysql db up to date
+how do interprocess communication?  named pipes?  one in each direction?
+
+
 
