@@ -13,11 +13,7 @@ critical
 logger = None
 MAX_LOG_SIZE = 100000
 
-if sys.platform.startswith('linux'):
-    DEBUG_LOG_PATH = r"/var/ramdrive/test.txt"
-else:
-    DEBUG_LOG_PATH = r"c:/junk/test.txt"
-
+DEBUG_LOG_PATH = r"/var/ramdrive/test.txt"
 
 def initialise(loggername="default", path=DEBUG_LOG_PATH, level=logging.INFO):
     """
@@ -39,25 +35,27 @@ def initialise(loggername="default", path=DEBUG_LOG_PATH, level=logging.INFO):
     logger.addHandler(ch)
 
 
-def loginfo(msg):
+def loginfo(msg, *args, **kwargs):
     global logger
-    logger.info(msg)
+    logger.info(msg, *args, **kwargs)
 
 
-def logerror(msg):
+def logerror(msg, *args, **kwargs):
     global logger
-    logger.error(msg)
+    logger.error(msg, *args, **kwargs)
 
 
-def logwarn(msg):
+def logwarn(msg, *args, **kwargs):
     global logger
-    logger.warn(msg)
+    logger.warn(msg, *args, **kwargs)
 
 
-def logdebug(msg):
+def logdebug(msg, *args, **kwargs):
     global logger
-    logger.debug(msg)
+    logger.debug(msg, *args, **kwargs)
 
+def exception(msg, *args, **kwargs):
+    logger.exception(msg, *args, **kwargs)
 
 class DatabaseError(RuntimeError):
     def __init__(self, arg):

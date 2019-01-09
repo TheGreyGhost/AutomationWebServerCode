@@ -5,18 +5,9 @@ import errorhandler
 from errorhandler import DatabaseError
 import datetime
 
-class DBaccess:
+class DBautomation:
     db = None
     cursor = None   # named tuple cursor into the db which holds access information
-    UNKNOWN_MAC_OWNER_NAME = 'unknown'
-    DEFAULT_ACCESS = False                  # if the access tables say "Default" then this is the access granted
-
-    BLOCKING_PRIORITY_OWNER_EXPLICIT = 1
-    BLOCKING_PRIORITY_CLIENT_EXPLICIT = 2
-    BLOCKING_PRIORITY_OWNER_TIMETABLE = 3
-    BLOCKING_PRIORITY_CLIENT_TIMETABLE = 4
-    BLOCKING_PRIORITY_OWNER_DEFAULT = 5
-    BLOCKING_PRIORITY_CLIENT_DEFAULT = 6
 
     def __init__(self, username="testreadonly", dbpassword=None,
                  host="localhost", port="8889", dbname="testfirewall"):
@@ -57,6 +48,8 @@ class DBaccess:
             self.cursor.close()
         if not self.db is None:
             self.db.close()
+
+
 
     def getknown_macs(self):
         """ returns a list of all known MAC addresses on the network

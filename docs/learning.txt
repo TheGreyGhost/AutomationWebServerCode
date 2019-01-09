@@ -1,3 +1,14 @@
 where are my setup notes from Swimming Pool Web server?
 
 180423RvW-RaspberryPiSetup.docx
+
+
+UDP sockets work as follows:
+
+bind your socket to an interface IP and a port.
+This allows it to receive messages on that interface and port.
+
+A client which calls sendto before recvfrom doesn't need to explicitly bind because the sendto performs an implicit bind
+with a random port.
+
+

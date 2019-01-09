@@ -1,6 +1,7 @@
 import argparse
 import errorhandler
 import logging
+from dbautomation import DBautomation
 
 DEBUG_LOG_PATH = r"/home/pi/automationwebserver.log"
 DEFAULT_DB_HOST_ADDR = "localhost"
@@ -35,6 +36,8 @@ if __name__ == '__main__':
     errorhandler.logdebug(args)
 
     try:
+        with DBautomation(host=args.dbaddr, port=args.dbport, dbname=args.databasename,
+                          username=args.username, dbpassword=args.password) as db:
 
     except IOError as e:
         errorhandler.logwarn("I/O error occurred ({0}): {1}".format(e.errno, e.strerror))

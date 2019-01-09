@@ -7,3 +7,12 @@ Created db called
 AutomationServerRealtime
 setting up a table PoolHeaterSensorValues
 storage engine Memory
+
+
+Client and server
+Sockets...
+https://realpython.com/python-sockets/#echo-client-and-server
+
+
+
+
