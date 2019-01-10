@@ -1,6 +1,12 @@
 import socket
 import errorhandler
 import select
+import struct
+from collections import namedtuple
+
+MAX_EXPECTED_MSG_SIZE = 1024
+PROTOCOL_VERSION = 'a'
+NUM_OF_TEMPERATURE_PROBES = 5
 
 class Arduino:
     """
@@ -71,8 +77,6 @@ Each response is a single UDP packet only.
 
     ip_port_arduino_datastream = None
 
-    MAX_EXPECTED_MSG_SIZE = 1024
-
     def __init__(self, ip_rpi, ip_arduino,
                  port_rpi_terminal, port_arduino_terminal, port_rpi_datastream, port_arduino_datastream):
 
@@ -98,21 +102,109 @@ Each response is a single UDP packet only.
         self.socket_datastream.sendto("!r", self.ip_port_arduino_datastream)
         self.socket_datastream.sendto("!s", self.ip_port_arduino_datastream)
 
+    def parse_sensor_readings(self, data):
+        """
+        native byte stream of
+          uint flags of vbles being simulated (2 bytes)
+          solar intensity (float)
+          cumulative insolation (float)
+          surge tank level (bool = 1 byte)
+          pump runtime (float)
+          for each temp probe: instant temp then smoothed temp.
+          invalid values are sent as NAN
+            const int HX_HOT_INLET = 0;
+            const int HX_HOT_OUTLET = 1;
+            const int HX_COLD_INLET = 2;
+            const int HX_COLD_OUTLET = 3;
+            const int AMBIENT = 4;
+
+          https://docs.python.org/3.6/library/struct.html#struct.unpack
+        """
+
+        try:
+            SensorReadingsStruct = namedtuple("SensorReadingsStruct",
+                                              "sim_flags solar_intensity cumulative_insolation surge_tank_ok pump_runtime"\
+                                              " hx_hot_inlet_inst hx_hot_inlet_smooth" \
+                                              " hx_hot_outlet_inst hx_hot_outlet_smooth" \
+                                              " hx_cold_inlet_inst hx_cold_inlet_smooth" \
+                                              " hx_cold_outlet_inst hx_cold_outlet_smooth" \
+                                              " temp_ambient_inst temp_ambient_smooth"
+                                              )
+            sensor_readings = SensorReadingsStruct._make(struct.unpack("<Hff?fffffffffff"))
+
+        except struct.error as e:
+            raise errorhandler.ArduinoMessageError("invalid msg:" + str(e))
+
+
+
+  unsigned int simflags = isBeingSimulatedAll();
+  dest.write((byte *)&simflags, sizeof simflags);
+  float solarIntensity = NAN;
+  if (!solarIntensityReadingInvalid && smoothedSolarIntensity.isValid()) {
+    solarIntensity = smoothedSolarIntensity.getEWMA();
+  }
+  dest.write((byte *)&solarIntensity, sizeof solarIntensity);
+  dest.write((byte *)&cumulativeInsolation, sizeof cumulativeInsolation);
+  dest.write((byte *)&surgeTankLevelOK, sizeof surgeTankLevelOK);
+  dest.write((byte *)&pumpRuntimeSeconds, sizeof pumpRuntimeSeconds);
+  for (int i = 0; i < NUMBER_OF_PROBES; ++i) {
+    float value = smoothedTemperatures[i].getInstantaneous();
+    dest.write((byte *)&value, sizeof value);
+    value = smoothedTemperatures[i].getEWMA();
+    dest.write((byte *)&value, sizeof value);
+  }
+  return DSE_OK;
+
+    def parse_system_status(self, data):
+
+    def parse_parameter_information(self, data):
+
+    def parse_logfile_entry(self, data):
+
+    def parse_number_of_logfile_entries(self, data):
+
+    def parse_incoming_message(self, data):
+        """
+         response:
+        !{command letter echoed}{byte version} then:
+        """
+        if len(data) < 3:
+            raise errorhandler.ArduinoMessageError("msg too short")
+        if data[0] != "!" :
+            raise errorhandler.ArduinoMessageError("msg didn't start with !")
+        if data[2] != PROTOCOL_VERSION:
+            raise errorhandler.ArduinoMessageError("protocol mismatch: expected {} received {}".format(PROTOCOL_VERSION, data[2]))
+
+        if data[1] == "r":
+            self.parse_sensor_readings(data[3:])
+        elif data[1] == "s":
+            self.parse_system_status(data[3:])
+        elif data[1] == "p":
+            self.parse_parameter_information(data[3:])
+        elif data[1] == "l":
+            self.parse_logfile_entry(data[3:])
+        elif data[1] == "n":
+            self.parse_number_of_logfile_entries(data[3:])
+        else:
+            raise errorhandler.ArduinoMessageError("invalid response command letter: {}".format(data[1]))
+
     def check_for_incoming_info(self):
         """
            Checks for any incoming information and processes if found
-        :return:
+        :return: true if any information was received, false otherwise
         """
         POLL_ONLY_TIMEOUT_VALUE = 0
+        got_at_least_one = False
         while (True):
             readables, writables, errors = select.select([self.socket_datastream], [], [], POLL_ONLY_TIMEOUT_VALUE)
             if not self.socket_datastream in readables:
-                return
-            data, remote_ip_port = serverSock.recvfrom(MAX_EXPECTED_MSG_SIZE)
+                return got_at_least_one
+            got_at_least_one = True
+            data, remote_ip_port = self.socket_datastream.recvfrom(MAX_EXPECTED_MSG_SIZE)
             if remote_ip_port != self.ip_port_arduino_datastream:
-                errorhandler.loginfo("Unexpected msg from {}".format(remote_ip_port))
+                errorhandler.loginfo("Msg from unexpected source {}".format(remote_ip_port))
             else:
-                parse_incoming_message(data)
+                self.parse_incoming_message(data)
 
 
 

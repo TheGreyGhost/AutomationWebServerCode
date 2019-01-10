@@ -61,7 +61,10 @@ class DatabaseError(RuntimeError):
     def __init__(self, arg):
         self.args = arg
 
-
 class LogDatabaseError(RuntimeError):
+    def __init__(self, arg):
+        self.args = arg
+
+class ArduinoMessageError(ValueError):
     def __init__(self, arg):
         self.args = arg
