@@ -58,7 +58,7 @@ class Configuration():
         default_config.set("DataTransfer", r"# see https://docs.python.org/3.6/library/struct.html#struct.unpack")
         datatransfer = default_config["DataTransfer"]
         datatransfer["ProtocolVersion"] = 'a'
-        datatransfer["SensorReadings"] = {"unpackformat": "<Hff?fffffffffff",
+        default_config["SensorReadings"] = {"unpackformat": "<Hff?fffffffffff",
                                                 "fieldnames":
                                                     "sim_flags solar_intensity cumulative_insolation"\
                                                     " surge_tank_ok pump_runtime"\
