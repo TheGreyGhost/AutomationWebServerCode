@@ -2,11 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="1d4b3084-bbba-4f4c-8398-a08dbd9b278b" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/configuration.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ArduinoInterface.py" beforeDir="false" afterPath="$PROJECT_DIR$/arduinointerface.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/automationwebserver.py" beforeDir="false" afterPath="$PROJECT_DIR$/automationwebserver.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dbautomation.py" beforeDir="false" afterPath="$PROJECT_DIR$/dbautomation.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/configuration.py" beforeDir="false" afterPath="$PROJECT_DIR$/configuration.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -43,7 +39,7 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="automationwebserver.py" pinned="false" current-in-tab="true">
+          <file leaf-file-name="automationwebserver.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/automationwebserver.py">
               <provider selected="true" editor-type-id="text-editor">
                 <state relative-caret-position="810">
@@ -55,11 +51,11 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="configuration.py" pinned="false" current-in-tab="false">
+          <file leaf-file-name="configuration.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/configuration.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="195">
-                  <caret line="55" column="44" lean-forward="true" selection-start-line="55" selection-start-column="44" selection-end-line="55" selection-end-column="44" />
+                <state relative-caret-position="630">
+                  <caret line="72" column="12" selection-start-line="72" selection-start-column="12" selection-end-line="72" selection-end-column="12" />
                   <folding>
                     <element signature="e#0#19#0" expanded="true" />
                   </folding>
@@ -109,8 +105,8 @@
           <file leaf-file-name="configuration.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/configuration.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="675">
-                  <caret line="48" column="46" lean-forward="true" selection-start-line="48" selection-start-column="46" selection-end-line="48" selection-end-column="46" />
+                <state relative-caret-position="225">
+                  <caret line="36" column="55" lean-forward="true" selection-start-line="36" selection-start-column="55" selection-end-line="36" selection-end-column="55" />
                   <folding>
                     <element signature="e#0#19#0" expanded="true" />
                   </folding>
@@ -152,10 +148,10 @@
         <option value="$PROJECT_DIR$/InformationTypes.py" />
         <option value="$PROJECT_DIR$/Configuration.py" />
         <option value="$PROJECT_DIR$/dbautomation.py" />
-        <option value="$PROJECT_DIR$/configuration.py" />
         <option value="$PROJECT_DIR$/ArduinoInterface.py" />
         <option value="$PROJECT_DIR$/arduinointerface.py" />
         <option value="$PROJECT_DIR$/automationwebserver.py" />
+        <option value="$PROJECT_DIR$/configuration.py" />
       </list>
     </option>
   </component>
@@ -408,16 +404,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/configuration.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="195">
-          <caret line="55" column="44" lean-forward="true" selection-start-line="55" selection-start-column="44" selection-end-line="55" selection-end-column="44" />
-          <folding>
-            <element signature="e#0#19#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/arduinointerface.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="510">
@@ -434,6 +420,16 @@
           <caret line="54" lean-forward="true" selection-start-line="54" selection-end-line="54" />
           <folding>
             <element signature="e#0#15#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/configuration.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="36" column="55" lean-forward="true" selection-start-line="36" selection-start-column="55" selection-end-line="36" selection-end-column="55" />
+          <folding>
+            <element signature="e#0#19#0" expanded="true" />
           </folding>
         </state>
       </provider>
