@@ -34,9 +34,11 @@ class Configuration():
         """
         default_config = configparser.ConfigParser()
 
-        general = default_config.add_section("General")
+        default_config.add_section("General")
+        general = default_config["General"]
         general["DebugLogPath"] = r"/home/pi/automationwebserver.log"
 
+        default_config.add_section("ArduinoLink")
         arduino = default_config["ArduinoLink"]
         arduino["ArdIPAddress"] = "192.168.2.35"
         arduino["ArdTerminalPort"] = "53201"
@@ -45,12 +47,14 @@ class Configuration():
         arduino["RpiTerminalPort"] = "53201"
         arduino["RpiDatastreamPort"] = "53202"
 
+        default_config.add_section("Databases")
         databases = default_config["Databases"]
         databases["HostAddress"] = "localhost"
         databases["HostPort"] = "3306"
         default_config['REALTIME'] = {'databasename': 'test', 'password': 'test', 'tablename': 'realtime'}
         default_config['HISTORY'] = {'databasename': 'test', 'password': 'test', 'tablename': 'history'}
 
+        default_config.add_section("DataTransfer")
         default_config.set("DataTransfer", r"# see https://docs.python.org/3.6/library/struct.html#struct.unpack")
         datatransfer = default_config["DataTransfer"]
         datatransfer["ProtocolVersion"] = 'a'
