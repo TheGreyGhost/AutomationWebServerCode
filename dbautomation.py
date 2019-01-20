@@ -9,8 +9,8 @@ class DBautomation:
     db = None
     cursor = None   # named tuple cursor into the db which holds access information
 
-    def __init__(self, username="testreadonly", dbpassword=None,
-                 host="localhost", port="8889", dbname="testfirewall"):
+    def __init__(self, username="test", dbpassword=None,
+                 host="localhost", port="3306", dbname="test"):
         tryagain = True
         interactive = (dbpassword is None)
         while tryagain:
@@ -26,8 +26,7 @@ class DBautomation:
                                              passwd=dbpassword,  # your password
                                              db=dbname,
                                              use_pure=True) #use_pure=true to prevent bug https://bugs.mysql.com/bug.php?id=90585
-                # you must create a Cursor object. It will let
-                #  you execute all the queries you need
+
                 self.cursor = self.db.cursor(buffered=True, named_tuple=True)
                     #buffered=True to prevent mysql.connector.errors.InternalError: Unread result found.
             except mysql.connector.Error as err:
@@ -48,8 +47,6 @@ class DBautomation:
             self.cursor.close()
         if not self.db is None:
             self.db.close()
-
-
 
     def getknown_macs(self):
         """ returns a list of all known MAC addresses on the network
