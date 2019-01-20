@@ -82,12 +82,12 @@ Each response is a single UDP packet only.
         self.configuration = i_configuration
         arduinolink = i_configuration.get["ArduinoLink"]
         ip_rpi = arduinolink["RPiIPAddress"]
-        port_rpi_terminal= arduinolink["RPiTerminalPort"]
-        port_rpi_datastream = arduinolink["RPiDatastreamPort"]
+        port_rpi_terminal= arduinolink.getint("RPiTerminalPort")
+        port_rpi_datastream = arduinolink.getint("RPiDatastreamPort")
 
         ip_arduino = arduinolink["ArdIPAddress"]
-        port_arduino_terminal= arduinolink["ApiTerminalPort"]
-        port_arduino_datastream = arduinolink["ArdDatastreamPort"]
+        port_arduino_terminal= arduinolink.getint("ArdTerminalPort")
+        port_arduino_datastream = arduinolink.getint("ArdDatastreamPort")
 
         self.socket_datastream = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.socket_datastream.bind((ip_rpi, port_rpi_datastream))

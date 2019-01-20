@@ -19,7 +19,7 @@ if __name__ == '__main__':
                         , action="store_true")
     args = parser.parse_args()
 
-    configuration = Configuration
+    configuration = Configuration()
     try:
         if args.initfile:
             if args.initfilecreate:
@@ -29,7 +29,7 @@ if __name__ == '__main__':
             if args.initfilecreate:
                 Configuration.generate_file_if_doesnt_exist()
             configuration.initialise_from_file()
-        errorhandler.initialise("automationwebserver", configuration["General"]["DebugLogPath"], args.debug)
+        errorhandler.initialise("automationwebserver", configuration.get["General"]["DebugLogPath"], args.debug)
 
     except:
         errorhandler.initialise("automationwebserver", DEFAULT_LOG_PATH)

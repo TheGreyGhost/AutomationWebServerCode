@@ -6,7 +6,7 @@ StorageTypes = Enum("StorageTypes", "REALTIME HISTORY SETTINGS TERMINAL")
 
 DEF_CONFIGURATION_FILE = r"/home/pi/automationwebserver.ini"
 
-class Configuration():
+class Configuration:
     """
         Holds configuration information stored on file:
         - database name, password, table name for each information type
@@ -32,7 +32,7 @@ class Configuration():
         provides the default text of the ini file
         :return: a ConfigParser initialised to the structure
         """
-        default_config = configparser.ConfigParser()
+        default_config = configparser.ConfigParser(allow_no_value=True)
 
         default_config.add_section("General")
         general = default_config["General"]
@@ -55,7 +55,7 @@ class Configuration():
         default_config['HISTORY'] = {'databasename': 'test', 'password': 'test', 'tablename': 'history'}
 
         default_config.add_section("DataTransfer")
-        default_config.set("DataTransfer", r"# see https://docs.python.org/3.6/library/struct.html#struct.unpack")
+        default_config.set("DataTransfer", r"# see https://docs.python.org/3.6/library/struct.html#struct.unpack", None)
         datatransfer = default_config["DataTransfer"]
         datatransfer["ProtocolVersion"] = 'a'
         default_config["SensorReadings"] = {"unpackformat": "<Hff?fffffffffff",
