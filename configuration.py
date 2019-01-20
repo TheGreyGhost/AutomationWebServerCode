@@ -23,8 +23,8 @@ class Configuration:
     def listall(self):
         retval = ""
         for section_name, section_data in self.config.items():
-            retval += "[" + section_name + "]\n"
-            retval += "\n".join(self.config.items(section_name))
+            retval += section_name + ":"
+            retval += str(self.config.items(section_name))
             retval += "\n"
         return retval
 

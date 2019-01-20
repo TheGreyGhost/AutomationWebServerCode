@@ -2,11 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="1d4b3084-bbba-4f4c-8398-a08dbd9b278b" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/AutomationWebserverCode.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/AutomationWebserverCode.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/arduinointerface.py" beforeDir="false" afterPath="$PROJECT_DIR$/arduinointerface.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/automationwebserver.py" beforeDir="false" afterPath="$PROJECT_DIR$/automationwebserver.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/configuration.py" beforeDir="false" afterPath="$PROJECT_DIR$/configuration.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -25,12 +20,12 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="py" value="141" />
+          <entry key="py" value="162" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="Python" value="141" />
+          <entry key="Python" value="162" />
         </counts>
       </usages-collector>
     </session>
@@ -129,8 +124,8 @@
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/configuration.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="173">
-                  <caret line="50" column="47" selection-start-line="50" selection-start-column="47" selection-end-line="50" selection-end-column="47" />
+                <state relative-caret-position="215">
+                  <caret line="25" column="39" selection-start-line="25" selection-start-column="39" selection-end-line="25" selection-end-column="39" />
                   <folding>
                     <element signature="e#0#19#0" expanded="true" />
                   </folding>
@@ -173,9 +168,9 @@
         <option value="$PROJECT_DIR$/Configuration.py" />
         <option value="$PROJECT_DIR$/dbautomation.py" />
         <option value="$PROJECT_DIR$/ArduinoInterface.py" />
-        <option value="$PROJECT_DIR$/configuration.py" />
         <option value="$PROJECT_DIR$/arduinointerface.py" />
         <option value="$PROJECT_DIR$/automationwebserver.py" />
+        <option value="$PROJECT_DIR$/configuration.py" />
       </list>
     </option>
   </component>
@@ -310,16 +305,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/configuration.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="250">
-          <caret line="58" column="32" selection-start-line="58" selection-start-column="32" selection-end-line="58" selection-end-column="32" />
-          <folding>
-            <element signature="e#0#19#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/arduinointerface.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="89">
@@ -336,6 +321,16 @@
           <caret line="33" column="4" selection-start-line="33" selection-start-column="4" selection-end-line="33" selection-end-column="4" />
           <folding>
             <element signature="e#0#15#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/configuration.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="215">
+          <caret line="25" column="39" selection-start-line="25" selection-start-column="39" selection-end-line="25" selection-end-column="39" />
+          <folding>
+            <element signature="e#0#19#0" expanded="true" />
           </folding>
         </state>
       </provider>
