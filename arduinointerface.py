@@ -110,7 +110,7 @@ Each response is a single UDP packet only.
            Asks the arduino to send the current status information and sensor information.  Doesn't wait for a reply.
         :return:
         """
-        self.socket_datastream.sendto("!r", self.ip_port_arduino_datastream)
+        self.socket_datastream.sendto(b"!r", self.ip_port_arduino_datastream)
 #        self.socket_datastream.sendto("!s", self.ip_port_arduino_datastream)
 
     def parse_message(self, structname, data):

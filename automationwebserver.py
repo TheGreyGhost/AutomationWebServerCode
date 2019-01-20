@@ -9,13 +9,13 @@ DEFAULT_LOG_PATH = r"/home/pi/automationwebserver.log"
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
-        epilog="Transfers information from the arduino to MySQL database using UDP messages."\
-               " Errors written to default logfile at {} or in the file specified in the .ini config file."\
+        epilog="Transfers information from the arduino to MySQL database using UDP messages." \
+               " Errors written to default logfile at {} or in the file specified in the .ini config file." \
                " The default .ini file is at {}".format(DEFAULT_LOG_PATH, configuration.DEF_CONFIGURATION_FILE))
     parser.add_argument("-d", "--debug", help="print debugging information", action="store_true")
     parser.add_argument("-i", "--initfile", help="the configuration ini file to use")
-    parser.add_argument("-ic", "--initfilecreate", help="create default configuration ini file if none found"\
-                                                         " (you must manually edit database names and passwords)"
+    parser.add_argument("-ic", "--initfilecreate", help="create default configuration ini file if none found" \
+                                                        " (you must manually edit database names and passwords)"
                         , action="store_true")
     args = parser.parse_args()
 
@@ -43,13 +43,13 @@ if __name__ == '__main__':
         errorhandler.logdebug("Config file used {}:".format(configuration.get_file_path()))
         errorhandler.logdebug(configuration.listall())
 
-#        with DBautomation(host=args.dbaddr, port=args.dbport, dbname=args.databasename,
-#                          username=args.username, dbpassword=args.password) as db:
+        #        with DBautomation(host=args.dbaddr, port=args.dbport, dbname=args.databasename,
+        #                          username=args.username, dbpassword=args.password) as db:
         arduino = arduinointerface.Arduino(configuration)
 
         arduino.request_realtime_info()
         for i in range(6):
-            gotmsg = arduino.parse_incoming_message()
+            gotmsg = arduino.check_for_incoming_info()
             errorhandler.logdebug("gotmsg:{}".format(gotmsg))
             time.sleep(1)
 

@@ -21,7 +21,12 @@ class Configuration:
         self.config.read(filename)
 
     def listall(self):
-        return repr(self.config)
+        retval = ""
+        for section_name, section_data in self.config.items():
+            retval += "[" + section_name + "]\n"
+            retval += "\n".join(self.config.items(section_name))
+            retval += "\n"
+        return retval
 
     def get_file_path(self):
         return self.path
@@ -43,7 +48,7 @@ class Configuration:
         arduino["ArdIPAddress"] = "192.168.2.35"
         arduino["ArdTerminalPort"] = "53201"
         arduino["ArdDatastreamPort"] = "53202"
-        arduino["RPiIPAddress"] = "192.168.2.35"
+        arduino["RPiIPAddress"] = "192.168.2.34"
         arduino["RpiTerminalPort"] = "53201"
         arduino["RpiDatastreamPort"] = "53202"
 
