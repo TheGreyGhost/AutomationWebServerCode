@@ -164,6 +164,7 @@ Each response is a single UDP packet only.
             if remote_ip_port != self.ip_port_arduino_datastream:
                 errorhandler.loginfo("Msg from unexpected source {}".format(remote_ip_port))
             else:
+                errorhandler.logdebug("msg received:{}".format(repr(data)))
                 self.parse_incoming_message(data)
 
 
