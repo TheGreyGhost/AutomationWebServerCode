@@ -58,13 +58,10 @@ def exception(msg, *args, **kwargs):
     logger.exception(msg, *args, **kwargs)
 
 class DatabaseError(RuntimeError):
-    def __init__(self, arg):
-        self.args = arg
+    pass
 
 class LogDatabaseError(RuntimeError):
-    def __init__(self, arg):
-        self.args = arg
+    pass
 
 class ArduinoMessageError(ValueError):
-    def __init__(self, arg):
-        self.args = arg
+    pass	
