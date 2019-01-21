@@ -117,7 +117,7 @@ Each response is a single UDP packet only.
         try:
             structinfo = self.configuration.get[structname]
             SensorReadingsStruct = namedtuple(structname, structinfo["fieldnames"])
-            sensor_readings = SensorReadingsStruct._make(struct.unpack(structinfo["unpackformat"]), data)
+            sensor_readings = SensorReadingsStruct._make(struct.unpack(structinfo["unpackformat"], data))
             errorhandler.logdebug("unpacked message:{}".format(repr(sensor_readings)))
         except struct.error as e:
             raise errorhandler.ArduinoMessageError("invalid msg for {}:{}".format(structname, str(e)))
@@ -129,24 +129,27 @@ Each response is a single UDP packet only.
         """
         if len(data) < 3:
             raise errorhandler.ArduinoMessageError("msg too short")
-        if data[0] != "!" :
+        if data[0:1] != b"!":
             raise errorhandler.ArduinoMessageError("msg didn't start with !")
-        if data[2] != self.protocol_version:
-            raise errorhandler.ArduinoMessageError("protocol mismatch: expected {} received {}"
-                                                   .format(self.protocol_version, data[2]))
+        if data[2] != ord(self.protocol_version):
+            raise errorhandler.ArduinoMessageError("protocol mismatch: expected {} received 0x{}"
+                                                   .format(self.protocol_version, data[2].hex()))
 
-        if data[1] == "r":
-            self.parse_message("SensorReadings", data[3:])
-        elif data[1] == "s":
-            self.parse_message("SystemStatus", data[3:])
-        elif data[1] == "p":
-            self.parse_message("ParameterInformation", data[3:])
-        elif data[1] == "l":
-            self.parse_message("LogfileEntry", data[3:])
-        elif data[1] == "n":
-            self.parse_message("NumberOfLogfileEntries", data[3:])
+        if data[-1] != 0:
+            raise errorhandler.ArduinoMessageError("message error code was nonzero:{}", data[-1].hex())
+
+        if data[1:2] == b"r":
+            self.parse_message("SensorReadings", data[3:-1])
+        elif data[1:2] == b"s":
+            self.parse_message("SystemStatus", data[3:-1])
+        elif data[1:2] == b"p":
+            self.parse_message("ParameterInformation", data[3:-1])
+        elif data[1:2] == b"l":
+            self.parse_message("LogfileEntry", data[3:-1])
+        elif data[1:2] == b"n":
+            self.parse_message("NumberOfLogfileEntries", data[3:-1])
         else:
-            raise errorhandler.ArduinoMessageError("invalid response command letter: {}".format(data[1]))
+            raise errorhandler.ArduinoMessageError("invalid response command letter: {}".format(data[1].hex()))
 
     def check_for_incoming_info(self):
         """
@@ -164,7 +167,7 @@ Each response is a single UDP packet only.
             if remote_ip_port != self.ip_port_arduino_datastream:
                 errorhandler.loginfo("Msg from unexpected source {}".format(remote_ip_port))
             else:
-                errorhandler.logdebug("msg received:{}".format(repr(data)))
+                errorhandler.logdebug("msg received:{}".format(data.hex()))
                 self.parse_incoming_message(data)
 
 
