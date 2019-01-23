@@ -41,7 +41,8 @@ class Configuration:
 
         default_config.add_section("General")
         general = default_config["General"]
-        general["DebugLogPath"] = r"/home/pi/automationwebserver.log"
+        general["PermanentLogPath"] = r"/home/pi/automationwebserver.log"
+        general["TempLogPath"] = r"/var/ramdrive/test.txt"
 
         default_config.add_section("ArduinoLink")
         arduino = default_config["ArduinoLink"]

@@ -5,7 +5,8 @@ from configuration import Configuration
 import arduinointerface
 import time
 
-DEFAULT_LOG_PATH = r"/home/pi/automationwebserver.log"
+DEFAULT_LOG_PATH_1 = r"/home/pi/automationwebserver1.log"
+DEFAULT_LOG_PATH_2 = r"/home/pi/automationwebserver2.log"
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
@@ -32,8 +33,8 @@ if __name__ == '__main__':
         errorhandler.initialise("automationwebserver", configuration.get["General"]["DebugLogPath"], args.debug)
 
     except:
-        errorhandler.initialise("automationwebserver", DEFAULT_LOG_PATH)
-        print("caught exception while processing config file, see default log {}".format(DEFAULT_LOG_PATH))
+        errorhandler.initialise("automationwebserver", DEFAULT_LOG_PATH_1, DEFAULT_LOG_PATH_2)
+        print("caught exception while processing config file, see default logs {}{}".format(DEFAULT_LOG_PATH_1, DEFAULT_LOG_PATH_2))
         errorhandler.exception("caught exception while processing config file")
         raise
 
@@ -55,8 +56,10 @@ if __name__ == '__main__':
 
     except IOError as e:
         errorhandler.logwarn("I/O error occurred ({0}): {1}".format(e.errno, e.strerror))
+    except errorhandler.ArduinoMessageError as e:
+        errorhandler.loginfo(e)
     except ValueError as e:
-        errorhandler.logerror(repr(e))
+        errorhandler.logwarn(repr(e))
     except:
         errorhandler.exception("Caught exception in main")
         raise

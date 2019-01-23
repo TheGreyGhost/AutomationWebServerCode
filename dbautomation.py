@@ -11,32 +11,18 @@ class DBautomation:
 
     def __init__(self, username="test", dbpassword=None,
                  host="localhost", port="3306", dbname="test"):
-        tryagain = True
-        interactive = (dbpassword is None)
-        while tryagain:
-            try:
-                if interactive:
-                    dbpassword = input("Enter database password for " + username +  " (empty = abort):")
-                    if len(dbpassword) == 0:
-                        return
+        try:
+            self.db = mysql.connector.connect(host=host,  # your host, usually localhost
+                                              port=port,
+                                              user=username,  # your username
+                                              passwd=dbpassword,  # your password
+                                              db=dbname,
+                                              use_pure=True) #use_pure=true to prevent bug https://bugs.mysql.com/bug.php?id=90585
 
-                self.db = mysql.connector.connect(host=host,  # your host, usually localhost
-                                             port=port,
-                                             user=username,  # your username
-                                             passwd=dbpassword,  # your password
-                                             db=dbname,
-                                             use_pure=True) #use_pure=true to prevent bug https://bugs.mysql.com/bug.php?id=90585
-
-                self.cursor = self.db.cursor(buffered=True, named_tuple=True)
-                    #buffered=True to prevent mysql.connector.errors.InternalError: Unread result found.
-            except mysql.connector.Error as err:
-                if err.errno == errorcode.ER_ACCESS_DENIED_ERROR and interactive:
-                    print("Something is wrong with your user name or password")
-                else:
-                    errorhandler.logerror(err)
-                    tryagain = False
-            else:
-                tryagain = False
+            self.cursor = self.db.cursor(buffered=True, named_tuple=True)
+                #buffered=True to prevent mysql.connector.errors.InternalError: Unread result found.
+        except mysql.connector.Error as err:
+            errorhandler.logerror(err)
 
     def __enter__(self):
         return self
@@ -47,6 +33,22 @@ class DBautomation:
             self.cursor.close()
         if not self.db is None:
             self.db.close()
+
+    def log_common(self, tablename, logfield, entries, timestart, timefinish):
+        if self.db is None or self.cursor is None:
+            raise DatabaseError("Not connected to a database")
+        if len(entries) == 0:
+            return
+        sqlstringparts = ["INSERT INTO {0} ({1}, count, timestart, timefinish) "
+                          "VALUES".format(tablename, logfield)]
+        separator = " "
+        for k, v in entries.items():
+            sqlstringparts.append("{0}('{1}', {2}, '{3}', '{4}')".format(separator, k, v, timestart, timefinish))
+            separator = ","
+        sqlstringparts.append(";")
+        sqlstring = "".join(sqlstringparts)
+        self.cursor.execute(sqlstring)
+        self.db.commit()
 
     def getknown_macs(self):
         """ returns a list of all known MAC addresses on the network
