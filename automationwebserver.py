@@ -11,10 +11,9 @@ DEFAULT_LOG_PATH_2 = r"/home/pi/automationwebserver2.log"
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         epilog="Transfers information from the arduino to MySQL database using UDP messages." \
-               " Errors written to default logfile at {} or in the file specified in the .ini config file." \
-               " The default .ini file is at {}".format(DEFAULT_LOG_PATH, configuration.DEF_CONFIGURATION_FILE))
+               " Errors written to the logfiles specified in the .ini config file.")
     parser.add_argument("-d", "--debug", help="print debugging information", action="store_true")
-    parser.add_argument("-i", "--initfile", help="the configuration ini file to use")
+    parser.add_argument("initfile", help="the configuration ini file to use")
     parser.add_argument("-ic", "--initfilecreate", help="create default configuration ini file if none found" \
                                                         " (you must manually edit database names and passwords)"
                         , action="store_true")
@@ -22,14 +21,9 @@ if __name__ == '__main__':
 
     configuration = Configuration()
     try:
-        if args.initfile:
-            if args.initfilecreate:
-                Configuration.generate_file_if_doesnt_exist(args.initfile)
-            configuration.initialise_from_file(args.initfile)
-        else:
-            if args.initfilecreate:
-                Configuration.generate_file_if_doesnt_exist()
-            configuration.initialise_from_file()
+        if args.initfilecreate:
+            Configuration.generate_file_if_doesnt_exist(args.initfile)
+        configuration.initialise_from_file(args.initfile)
         errorhandler.initialise("automationwebserver", configuration.get["General"]["DebugLogPath"], args.debug)
 
     except:
@@ -47,6 +41,8 @@ if __name__ == '__main__':
         #        with DBautomation(host=args.dbaddr, port=args.dbport, dbname=args.databasename,
         #                          username=args.username, dbpassword=args.password) as db:
         arduino = arduinointerface.Arduino(configuration)
+
+
 
         arduino.request_realtime_info()
         for i in range(6):

@@ -57,8 +57,10 @@ class Configuration:
         databases = default_config["Databases"]
         databases["HostAddress"] = "localhost"
         databases["HostPort"] = "3306"
-        default_config['REALTIME'] = {'databasename': 'test', 'password': 'test', 'tablename': 'realtime'}
-        default_config['HISTORY'] = {'databasename': 'test', 'password': 'test', 'tablename': 'history'}
+        default_config['REALTIME'] = {'databasename': 'testname', 'user': 'testuser',
+                                      'password': 'testpassword', 'tablename': 'realtime'}
+        default_config['HISTORY'] = {'databasename': 'testname', 'user': 'testuser',
+                                     'password': 'testpassword', 'tablename': 'history'}
 
         default_config.add_section("DataTransfer")
         default_config.set("DataTransfer", r"# see https://docs.python.org/3.6/library/struct.html#struct.unpack", None)

@@ -4,6 +4,7 @@ import select
 import struct
 from collections import namedtuple
 from configuration import Configuration
+from dbautomation import DBautomation
 
 MAX_EXPECTED_MSG_SIZE = 1024
 
@@ -78,6 +79,11 @@ Each response is a single UDP packet only.
     configuration = None
     protocol_version = None
 
+    db_realtime = None
+    table_realtime = None
+    db_history = None
+    table_history = None
+
     def __init__(self, i_configuration):
         self.configuration = i_configuration
         arduinolink = i_configuration.get["ArduinoLink"]
@@ -94,6 +100,18 @@ Each response is a single UDP packet only.
         self.ip_port_arduino_datastream = (ip_arduino, port_arduino_datastream)
 
         self.protocol_version = i_configuration.get["DataTransfer"]["ProtocolVersion"]
+
+        database_info = i_configuration.get["Databases"]
+        realtime_info = i_configuration.get["REALTIME"]
+        history_info = i_configuration.get["HISTORY"]
+        self.db_realtime = DBautomation(realtime_info["user"], realtime_info["password"], database_info["HostAddress"],
+                                        database_info.getint("HostPort"), realtime_info["databasename"]
+                                        )
+        self.table_realtime = realtime_info["tablename"]
+        self.db_history = DBautomation(history_info["user"], history_info["password"], database_info["HostAddress"],
+                                        database_info.getint("HostPort"), history_info["databasename"]
+                                        )
+        self.table_history = history_info["tablename"]
 
     def __enter__(self):
         return self
