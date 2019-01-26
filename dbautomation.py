@@ -4,6 +4,7 @@ from mysql.connector import errorcode
 import errorhandler
 from errorhandler import DatabaseError
 import datetime
+import time
 
 class DBautomation:
     db = None
@@ -35,13 +36,22 @@ class DBautomation:
 
     def write_single_row_fifo(self, tablename, data, maxrows):
         """
-        writes the given data into the database; overwrites
+        writes the given data into the database; overwrites the existing row
+        adds an autoincrement primary key
         :param tablename: table to write into
         :param data: named tuple containing the data to be written into the db (a single row)
         :return:
         """
+        insertSQL = "INSERT INTO {tablename} ({fieldnames}) VALUES {values}"
+        fieldnames = ",".join(name for name in data._fields)
+        values = ",".join(data)
+# I assume that fieldnames and values are in the same order?  is that valid?
 
-DELETE FROM foo WHERE id NOT IN (SELECT id FROM foo ORDER BY id DESC LIMIT 10)
+        UP TO HERE
+        deleteSQL = "DELETE FROM {tablename} WHERE primarykey NOT IN (SELECT primarykey FROM {tablename}"\
+                    "ORDER BY primarykey DESC LIMIT 1)".format(tablename=tablename)
+        self.cursor.execute(deleteSQL)
+        self.db.commit()
 
 #     def log_common(self, tablename, logfield, entries, timestart, timefinish):
 #         if self.db is None or self.cursor is None:
