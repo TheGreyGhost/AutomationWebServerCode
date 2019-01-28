@@ -47,7 +47,7 @@ class DBautomation:
         values = ",".join(data)
 # I assume that fieldnames and values are in the same order?  is that valid?
 
-        UP TO HERE
+ #       UP TO HERE
         deleteSQL = "DELETE FROM {tablename} WHERE primarykey NOT IN (SELECT primarykey FROM {tablename}"\
                     "ORDER BY primarykey DESC LIMIT 1)".format(tablename=tablename)
         self.cursor.execute(deleteSQL)
