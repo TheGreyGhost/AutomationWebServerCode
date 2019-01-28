@@ -4,8 +4,6 @@ from enum import Enum
 
 StorageTypes = Enum("StorageTypes", "REALTIME HISTORY SETTINGS TERMINAL")
 
-DEF_CONFIGURATION_FILE = r"/home/pi/automationwebserver.ini"
-
 class Configuration:
     """
         Holds configuration information stored on file:
@@ -14,9 +12,9 @@ class Configuration:
     """
 
     config = configparser.ConfigParser()
-    path = DEF_CONFIGURATION_FILE
+    path = None
 
-    def initialise_from_file(self, filename=DEF_CONFIGURATION_FILE):
+    def initialise_from_file(self, filename):
         self.path = filename
         self.config.read(filename)
 
@@ -80,10 +78,13 @@ class Configuration:
         return default_config
 
     @staticmethod
-    def generate_file_if_doesnt_exist(filename=DEF_CONFIGURATION_FILE):
+    def generate_file_if_doesnt_exist(filename):
         default_config = Configuration.get_default()
-        with open(filename, 'x') as configfile:
-            default_config.write(configfile)
+        try:
+            with open(filename, 'x') as configfile:
+                default_config.write(configfile)
+        except FileExistsError:
+            pass
 
     @property
     def get(self):

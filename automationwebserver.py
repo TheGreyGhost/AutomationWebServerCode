@@ -4,9 +4,7 @@ import configuration
 from configuration import Configuration
 import arduinointerface
 import time
-
-DEFAULT_LOG_PATH_1 = r"/home/pi/automationwebserver1.log"
-DEFAULT_LOG_PATH_2 = r"/home/pi/automationwebserver2.log"
+import logging
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
@@ -24,11 +22,13 @@ if __name__ == '__main__':
         if args.initfilecreate:
             Configuration.generate_file_if_doesnt_exist(args.initfile)
         configuration.initialise_from_file(args.initfile)
-        errorhandler.initialise("automationwebserver", configuration.get["General"]["DebugLogPath"], args.debug)
+        templogginglevel = logging.DEBUG if args.debug else logging.INFO
+        errorhandler.initialise("automationwebserver",
+                                temppath=configuration.get["General"]["TempLogPath"],
+                                permpath=configuration.get["General"]["PermanentLogPath"],
+                                templevel=templogginglevel, permlevel=logging.ERROR)
 
     except:
-        errorhandler.initialise("automationwebserver", DEFAULT_LOG_PATH_1, DEFAULT_LOG_PATH_2)
-        print("caught exception while processing config file, see default logs {}{}".format(DEFAULT_LOG_PATH_1, DEFAULT_LOG_PATH_2))
         errorhandler.exception("caught exception while processing config file")
         raise
 
