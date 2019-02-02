@@ -13,6 +13,21 @@ Client and server
 Sockets...
 https://realpython.com/python-sockets/#echo-client-and-server
 
+For testing on windows:
+database localhost tunnel thru putty using :
+  8888 to access mysql webadmin port 80
+  8889 to access mysql port 3306
+  8890 to
+
+  ardipaddress = 192.168.2.35
+ardterminalport = 53201
+arddatastreamport = 53202
+rpiipaddress = 192.168.2.34
+rpiterminalport = 53201
+rpidatastreamport = 53202
+
+
+
 
 
 
