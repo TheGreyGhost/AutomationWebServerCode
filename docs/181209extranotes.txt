@@ -25,6 +25,8 @@ database localhost tunnel thru putty using :
 !n = request number of entries in log file
 !c = cancel transmissions (log file)
 
+install mysql-connector-python:
+pip3 install mysql-connector-python
 
 
 
