@@ -7,19 +7,21 @@ import datetime
 import time
 
 class DBautomation:
-    db = None
-    cursor = None   # named tuple cursor into the db which holds access information
+    m_db = None
+    m_cursor = None   # named tuple cursor into the db which holds access information
+    # m_fifo_mode = False
+    # m_max_rows = 0
 
     def __init__(self, username, dbpassword, host, port, dbname):
         try:
-            self.db = mysql.connector.connect(host=host,  # your host, usually localhost
-                                              port=port,
-                                              user=username,  # your username
-                                              passwd=dbpassword,  # your password
-                                              db=dbname,
-                                              use_pure=True) #use_pure=true to prevent bug https://bugs.mysql.com/bug.php?id=90585
+            self.m_db = mysql.connector.connect(host=host,  # your host, usually localhost
+                                                port=port,
+                                                user=username,  # your username
+                                                passwd=dbpassword,  # your password
+                                                db=dbname,
+                                                use_pure=True) #use_pure=true to prevent bug https://bugs.mysql.com/bug.php?id=90585
 
-            self.cursor = self.db.cursor(buffered=True, named_tuple=True)
+            self.m_cursor = self.m_db.cursor(buffered=True, named_tuple=True)
                 #buffered=True to prevent mysql.connector.errors.InternalError: Unread result found.
         except mysql.connector.Error as err:
             errorhandler.logerror(err)
@@ -29,10 +31,19 @@ class DBautomation:
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         # make sure the objects get closed
-        if not self.cursor is None:
-            self.cursor.close()
-        if not self.db is None:
-            self.db.close()
+        if not self.m_cursor is None:
+            self.m_cursor.close()
+        if not self.m_db is None:
+            self.m_db.close()
+
+    # def set_fifo_mode(self, maxrows):
+    #     """
+    #     turn on First In First Out with specified max number of rows; old rows are deleted as new are inserted
+    #     :param maxrows: the max number of rows to retain
+    #     :return: none
+    #     """
+    #     self.m_fifo_mode = True
+    #     self.m_max_rows = maxrows
 
     def write_single_row_fifo(self, tablename, data, maxrows):
         """
@@ -40,18 +51,26 @@ class DBautomation:
         adds an autoincrement primary key
         :param tablename: table to write into
         :param data: named tuple containing the data to be written into the db (a single row)
+        :param maxrows: maximum number of rows to retain in the table
         :return:
         """
-        insertSQL = "INSERT INTO {tablename} ({fieldnames}) VALUES {values}"
         fieldnames = ",".join(name for name in data._fields)
-        values = ",".join(data)
-# I assume that fieldnames and values are in the same order?  is that valid?
+        values = ",".join(str(i) for i in data)
+        insertSQL = "INSERT INTO {tablename} ({fieldnames}) VALUES ({values});"\
+            .format(tablename=tablename, fieldnames=fieldnames, values=values)
+        self.m_cursor.execute(insertSQL)
 
- #       UP TO HERE
-        deleteSQL = "DELETE FROM {tablename} WHERE primarykey NOT IN (SELECT primarykey FROM {tablename}"\
-                    "ORDER BY primarykey DESC LIMIT 1)".format(tablename=tablename)
-        self.cursor.execute(deleteSQL)
-        self.db.commit()
+        findrowcountSQL = "SELECT entry_number FROM {tablename} "\
+                " ORDER BY entry_number DESC LIMIT {first_row_to_delete}, 1;"\
+                .format(tablename=tablename, first_row_to_delete=maxrows)
+        self.m_cursor.execute(findrowcountSQL)
+        youngest_row_to_delete = self.m_cursor.fetchone()
+        if not youngest_row_to_delete is None:
+            deleteSQL = "DELETE FROM {tablename} WHERE entry_number <= {youngest_to_delete};"\
+                        .format(tablename=tablename, youngest_to_delete=youngest_row_to_delete[0])
+            self.m_cursor.execute(deleteSQL)
+
+        self.m_db.commit()
 
 #     def log_common(self, tablename, logfield, entries, timestart, timefinish):
 #         if self.db is None or self.cursor is None:
