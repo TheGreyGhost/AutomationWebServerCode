@@ -80,9 +80,10 @@ Each response is a single UDP packet only.
     protocol_version = None
 
     db_realtime = None
-    table_realtime = None
     db_history = None
-    table_history = None
+
+    max_realtime_rows = 1
+    test_message_response = None
 
     def __init__(self, i_configuration):
         self.configuration = i_configuration
@@ -107,11 +108,13 @@ Each response is a single UDP packet only.
         self.db_realtime = DBautomation(realtime_info["user"], realtime_info["password"], database_info["HostAddress"],
                                         database_info.getint("HostPort"), realtime_info["databasename"]
                                         )
-        self.table_realtime = realtime_info["tablename"]
+        self.max_realtime_rows = realtime_info.getint("max_rows")
+
+#        self.table_realtime = realtime_info["tablename"]
         self.db_history = DBautomation(history_info["user"], history_info["password"], database_info["HostAddress"],
                                         database_info.getint("HostPort"), history_info["databasename"]
                                         )
-        self.table_history = history_info["tablename"]
+ #       self.table_history = history_info["tablename"]
 
     def __enter__(self):
         return self
@@ -134,9 +137,10 @@ Each response is a single UDP packet only.
     def parse_message(self, structname, data):
         try:
             structinfo = self.configuration.get[structname]
-            SensorReadingsStruct = namedtuple(structname, structinfo["fieldnames"])
-            sensor_readings = SensorReadingsStruct._make(struct.unpack(structinfo["unpackformat"], data))
-            errorhandler.logdebug("unpacked message:{}".format(repr(sensor_readings)))
+            message_struct = namedtuple(structname, structinfo["fieldnames"])
+            message = message_struct._make(struct.unpack(structinfo["unpackformat"], data))
+            errorhandler.logdebug("unpacked message:{}".format(repr(message)))
+            return message
         except struct.error as e:
             raise errorhandler.ArduinoMessageError("invalid msg for {}:{}".format(structname, str(e)))
 
@@ -157,7 +161,9 @@ Each response is a single UDP packet only.
             raise errorhandler.ArduinoMessageError("message error code was nonzero:{}", data[-1].hex())
 
         if data[1:2] == b"r":
-            self.parse_message("SensorReadings", data[3:-1])
+            msg = self.parse_message("SensorReadings", data[3:-1])
+            table_name = self.configuration.get["SensorReadings"]["tablename"]
+            self.db_realtime.write_single_row_fifo(tablename=table_name, data=msg, maxrows=self.max_realtime_rows)
         elif data[1:2] == b"s":
             self.parse_message("SystemStatus", data[3:-1])
         elif data[1:2] == b"p":
@@ -174,6 +180,11 @@ Each response is a single UDP packet only.
            Checks for any incoming information and processes if found
         :return: true if any information was received, false otherwise
         """
+
+        if self.test_message_response:
+            self.parse_incoming_message(self.test_message_response)
+            return True
+
         POLL_ONLY_TIMEOUT_VALUE = 0
         got_at_least_one = False
         while (True):
@@ -188,5 +199,8 @@ Each response is a single UDP packet only.
                 errorhandler.logdebug("msg received:{}".format(data.hex()))
                 self.parse_incoming_message(data)
 
+    def set_test_response(self, response_msg_filename):
+        with open(response_msg_filename, mode='rb') as file:  # b is important -> binary
+            self.test_message_response = file.read()
 
 

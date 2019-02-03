@@ -8,10 +8,24 @@ AutomationServerRealtime
 setting up a table PoolHeaterSensorValues
 storage engine Memory
 
-
 Client and server
 Sockets...
 https://realpython.com/python-sockets/#echo-client-and-server
+
+For testing on windows:
+database localhost tunnel thru putty using :
+  8888 to access mysql webadmin port 80
+  8889 to access mysql port 3306
+  8890 to simulate connection with arduino using rpi
+
+!r = request current sensor information (readings)
+!s = system status
+!p = request parameter information
+!l{dword row nr}{word count} in LSB first order = request entries from log file
+!n = request number of entries in log file
+!c = cancel transmissions (log file)
+
+
 
 
 
