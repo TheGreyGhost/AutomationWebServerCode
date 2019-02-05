@@ -27,6 +27,10 @@ database localhost tunnel thru putty using :
 
 install mysql-connector-python:
 pip3 install mysql-connector-python
+This led to a problem with mysql module when run as a service
+Suggested fix:
+If you do want to run the service as root, you have to install the module with sudo: sudo pip install my_module.
+
 
 automatic start at reboot:
 see https://www.dexterindustries.com/howto/run-a-program-on-your-raspberry-pi-at-startup/
@@ -36,6 +40,9 @@ automationwebserver.service
 Copy automationwebserver.service to /lib/systemd/system/ and
 sudo chmod 644 /lib/systemd/system/automationwebserver.service
 sudo systemctl enable automationwebserver.service
+au
+check service error log using:
+journalctl -u automationwebserver.service
 
 
 

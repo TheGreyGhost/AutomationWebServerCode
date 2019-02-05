@@ -4,7 +4,7 @@
 
  [Service]
  Type=idle
- ExecStart=/usr/bin/python3 /home/pi/AutomationWebServerCode /home/pi/automationwebserver.ini
+ ExecStart=/usr/bin/python3 /home/pi/Python/AutomationWebServerCode/automationwebserver.py /home/pi/automationwebserver.ini
 
  [Install]
  WantedBy=multi-user.target
