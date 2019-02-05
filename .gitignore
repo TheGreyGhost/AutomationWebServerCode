@@ -116,4 +116,5 @@ dmypy.json
 .idea/misc.xml
 .idea/vcs.xml
 .idea/workspace.xml
-wintest/wintest.ini
+wintest/
+.idea/workspace.xml

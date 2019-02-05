@@ -56,8 +56,9 @@ class DBautomation:
         """
         fieldnames = ",".join(name for name in data._fields)
         values = ",".join(str(i) for i in data)
-        insertSQL = "INSERT INTO {tablename} ({fieldnames}) VALUES ({values});"\
-            .format(tablename=tablename, fieldnames=fieldnames, values=values)
+        timenow = time.time()
+        insertSQL = "INSERT INTO {tablename} (timestamp,{fieldnames}) VALUES ({timestamp},{values});"\
+            .format(tablename=tablename, fieldnames=fieldnames, timestamp=timenow, values=values)
         self.m_cursor.execute(insertSQL)
 
         findrowcountSQL = "SELECT entry_number FROM {tablename} "\

@@ -25,6 +25,9 @@ database localhost tunnel thru putty using :
 !n = request number of entries in log file
 !c = cancel transmissions (log file)
 
+install mysql-connector-python:
+pip3 install mysql-connector-python
+
 automatic start at reboot:
 see https://www.dexterindustries.com/howto/run-a-program-on-your-raspberry-pi-at-startup/
 decided on systemd to run a service
@@ -33,6 +36,7 @@ automationwebserver.service
 Copy automationwebserver.service to /lib/systemd/system/ and
 sudo chmod 644 /lib/systemd/system/automationwebserver.service
 sudo systemctl enable automationwebserver.service
+
 
 
 

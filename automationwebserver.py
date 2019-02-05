@@ -4,6 +4,7 @@ import configuration
 from configuration import Configuration
 import arduinointerface
 import time
+import logging
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
@@ -22,14 +23,14 @@ if __name__ == '__main__':
         if args.initfilecreate:
             Configuration.generate_file_if_doesnt_exist(args.initfile)
         configuration.initialise_from_file(args.initfile)
+        templogginglevel = logging.DEBUG if args.debug else logging.INFO
         errorhandler.initialise("automationwebserver",
-                                temppath=configuration.get["General"]["templogpath"],
-                                permpath=configuration.get["General"]["permanentlogpath"],
-                                templevel=errorhandler.logging.DEBUG if args.debug else errorhandler.logging.INFO,
-                                permlevel=errorhandler.logging.ERROR)
+                                temppath=configuration.get["General"]["TempLogPath"],
+                                permpath=configuration.get["General"]["PermanentLogPath"],
+                                templevel=templogginglevel, permlevel=logging.ERROR)
 
     except:
-        print("caught exception while processing config file")
+        errorhandler.exception("caught exception while processing config file")
         raise
 
     try:
