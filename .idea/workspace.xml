@@ -2,18 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="1d4b3084-bbba-4f4c-8398-a08dbd9b278b" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/wintest/request-l" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/wintest/response-l" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/wintest/response-n" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/wintest/response-p" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/wintest/response-r" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/wintest/response-s" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/automationwebserver.service" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/arduinointerface.py" beforeDir="false" afterPath="$PROJECT_DIR$/arduinointerface.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/automationwebserver.py" beforeDir="false" afterPath="$PROJECT_DIR$/automationwebserver.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dbautomation.py" beforeDir="false" afterPath="$PROJECT_DIR$/dbautomation.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/docs/181209extranotes.txt" beforeDir="false" afterPath="$PROJECT_DIR$/docs/181209extranotes.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/wintest/wintest.ini" beforeDir="false" afterPath="$PROJECT_DIR$/wintest/wintest.ini" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -73,7 +64,7 @@
       <file leaf-file-name="dbautomation.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/dbautomation.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="533">
+            <state relative-caret-position="1005">
               <caret line="72" column="26" selection-start-line="72" selection-start-column="26" selection-end-line="72" selection-end-column="26" />
               <folding>
                 <element signature="e#72#94#0" expanded="true" />
@@ -85,8 +76,8 @@
       <file leaf-file-name="automationwebserver.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/automationwebserver.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="92">
-              <caret line="52" column="40" lean-forward="true" selection-start-line="52" selection-start-column="40" selection-end-line="52" selection-end-column="40" />
+            <state relative-caret-position="705">
+              <caret line="52" column="40" selection-start-line="52" selection-start-column="40" selection-end-line="52" selection-end-column="40" />
               <folding>
                 <element signature="e#0#15#0" expanded="true" />
               </folding>
@@ -94,35 +85,38 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="runpy.py" pinned="false" current-in-tab="false">
-        <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python37/Lib/runpy.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="194">
-              <caret line="84" selection-start-line="84" selection-end-line="84" />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="connection.py" pinned="false" current-in-tab="false">
         <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python37/Lib/site-packages/mysql/connector/connection.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-9">
+            <state relative-caret-position="6255">
               <caret line="438" column="11" selection-start-line="438" selection-start-column="11" selection-end-line="438" selection-end-column="11" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="temporary.log" pinned="false" current-in-tab="true">
+      <file leaf-file-name="temporary.log" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/wintest/temporary.log">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
+      <file leaf-file-name="automationwebserver.service" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/automationwebserver.service">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-3304" />
+            <state relative-caret-position="135">
+              <caret line="9" column="5" lean-forward="true" selection-start-line="9" selection-start-column="5" selection-end-line="9" selection-end-column="5" />
+            </state>
           </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="designnotes.txt" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/docs/designnotes.txt">
+          <provider selected="true" editor-type-id="text-editor" />
         </entry>
       </file>
       <file leaf-file-name="arduinointerface.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/arduinointerface.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="209">
+            <state relative-caret-position="2685">
               <caret line="185" selection-start-line="185" selection-end-line="185" />
               <folding>
                 <element signature="e#0#13#0" expanded="true" />
@@ -131,27 +125,16 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="configparser.py" pinned="false" current-in-tab="false">
-        <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python37/Lib/configparser.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="218">
-              <caret line="957" selection-start-line="957" selection-end-line="957" />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="permanent.log" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/wintest/permanent.log">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1459" />
-          </provider>
+          <provider selected="true" editor-type-id="text-editor" />
         </entry>
       </file>
-      <file leaf-file-name="181209extranotes.txt" pinned="false" current-in-tab="false">
+      <file leaf-file-name="181209extranotes.txt" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/docs/181209extranotes.txt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="135">
-              <caret line="9" selection-start-line="9" selection-end-line="9" />
+            <state relative-caret-position="510">
+              <caret line="34" column="41" selection-start-line="34" selection-start-column="41" selection-end-line="34" selection-end-column="41" />
             </state>
           </provider>
         </entry>
@@ -187,7 +170,6 @@
         <option value="$PROJECT_DIR$/Configuration.py" />
         <option value="$PROJECT_DIR$/ArduinoInterface.py" />
         <option value="$PROJECT_DIR$/configuration.py" />
-        <option value="$PROJECT_DIR$/docs/181209extranotes.txt" />
         <option value="$PROJECT_DIR$/errorhandler.py" />
         <option value="$PROJECT_DIR$/wintest/wintest.ini" />
         <option value="$PROJECT_DIR$/arduinointerface.py" />
@@ -195,12 +177,14 @@
         <option value="$PROJECT_DIR$/wintest/temporary.log" />
         <option value="$PROJECT_DIR$/dbautomation.py" />
         <option value="$PROJECT_DIR$/automationwebserver.py" />
+        <option value="$PROJECT_DIR$/automationwebserver.service" />
+        <option value="$PROJECT_DIR$/docs/181209extranotes.txt" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="386" />
-    <option name="y" value="124" />
+  <component name="ProjectFrameBounds">
+    <option name="x" value="135" />
+    <option name="y" value="442" />
     <option name="width" value="1400" />
     <option name="height" value="992" />
   </component>
@@ -210,7 +194,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -225,17 +208,13 @@
             </path>
             <path>
               <item name="AutomationWebserverCode" type="b2602c69:ProjectViewProjectNode" />
-              <item name="AutomationWebserverCode" type="462c0819:PsiDirectoryNode" />
-              <item name="wintest" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="AutomationWebserverCode" type="b2602c69:ProjectViewProjectNode" />
               <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -243,6 +222,9 @@
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Richard\PycharmProjects\AutomationWebserverCode" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\Richard\PycharmProjects\AutomationWebserverCode" />
     </key>
@@ -339,18 +321,19 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1186" extended-state="6" />
+    <frame x="135" y="442" width="1400" height="992" extended-state="0" />
+    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.20052083" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.2781792" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.5005208" side_tool="true" weight="0.32919848" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49947917" weight="0.3225191" />
       <window_info anchor="bottom" id="Version Control" order="9" />
       <window_info anchor="bottom" id="Python Console" order="7" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49947917" weight="0.3225191" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="bottom" id="Terminal" order="8" />
-      <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.39885497" />
+      <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -403,13 +386,81 @@
     </expressions>
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/wintest/wintest.ini">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="525">
+          <caret line="35" selection-start-line="34" selection-end-line="35" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dbautomation.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1005">
+          <caret line="72" column="26" selection-start-line="72" selection-start-column="26" selection-end-line="72" selection-end-column="26" />
+          <folding>
+            <element signature="e#72#94#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/automationwebserver.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="705">
+          <caret line="52" column="40" lean-forward="true" selection-start-line="52" selection-start-column="40" selection-end-line="52" selection-end-column="40" />
+          <folding>
+            <element signature="e#0#15#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python37/Lib/runpy.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1200">
+          <caret line="84" selection-start-line="84" selection-end-line="84" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python37/Lib/site-packages/mysql/connector/connection.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="6255">
+          <caret line="438" column="11" selection-start-line="438" selection-start-column="11" selection-end-line="438" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/arduinointerface.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2685">
+          <caret line="185" selection-start-line="185" selection-end-line="185" />
+          <folding>
+            <element signature="e#0#13#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python37/Lib/configparser.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="14235">
+          <caret line="957" selection-start-line="957" selection-end-line="957" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/wintest/permanent.log">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/docs/181209extranotes.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="135">
+          <caret line="9" selection-start-line="9" selection-end-line="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/wintest/temporary.log">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
     <entry file="file://$PROJECT_DIR$/errorhandler.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="795">
           <caret line="55" selection-start-line="55" selection-end-line="55" />
-          <folding>
-            <element signature="e#0#14#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -437,9 +488,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="930">
           <caret line="64" column="37" selection-start-line="64" selection-start-column="37" selection-end-line="64" selection-end-column="37" />
-          <folding>
-            <element signature="e#0#19#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -481,9 +529,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="795">
           <caret line="55" selection-start-line="55" selection-end-line="55" />
-          <folding>
-            <element signature="e#0#14#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -511,9 +556,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="900">
           <caret line="62" column="37" selection-start-line="62" selection-start-column="37" selection-end-line="62" selection-end-column="37" />
-          <folding>
-            <element signature="e#0#19#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -550,42 +592,31 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/docs/designnotes.txt">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/configuration.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="960">
           <caret line="64" column="37" selection-start-line="64" selection-start-column="37" selection-end-line="64" selection-end-column="37" />
-          <folding>
-            <element signature="e#0#19#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/wintest/temporary.txt">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
+    <entry file="file://$PROJECT_DIR$/wintest/temporary.txt" />
     <entry file="file://$PROJECT_DIR$/errorhandler.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="75">
           <caret line="5" column="5" lean-forward="true" selection-start-line="5" selection-start-column="5" selection-end-line="5" selection-end-column="5" />
-          <folding>
-            <element signature="e#0#14#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python37/Lib/configparser.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="218">
+        <state relative-caret-position="14235">
           <caret line="957" selection-start-line="957" selection-end-line="957" />
         </state>
       </provider>
     </entry>
     <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python37/Lib/runpy.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="194">
+        <state relative-caret-position="1200">
           <caret line="84" selection-start-line="84" selection-end-line="84" />
         </state>
       </provider>
@@ -597,23 +628,16 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/docs/181209extranotes.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="135">
-          <caret line="9" selection-start-line="9" selection-end-line="9" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python37/Lib/site-packages/mysql/connector/connection.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-9">
+        <state relative-caret-position="6255">
           <caret line="438" column="11" selection-start-line="438" selection-start-column="11" selection-end-line="438" selection-end-column="11" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/dbautomation.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="533">
+        <state relative-caret-position="1005">
           <caret line="72" column="26" selection-start-line="72" selection-start-column="26" selection-end-line="72" selection-end-column="26" />
           <folding>
             <element signature="e#72#94#0" expanded="true" />
@@ -623,7 +647,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/arduinointerface.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="209">
+        <state relative-caret-position="2685">
           <caret line="185" selection-start-line="185" selection-end-line="185" />
           <folding>
             <element signature="e#0#13#0" expanded="true" />
@@ -633,8 +657,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/automationwebserver.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="92">
-          <caret line="52" column="40" lean-forward="true" selection-start-line="52" selection-start-column="40" selection-end-line="52" selection-end-column="40" />
+        <state relative-caret-position="705">
+          <caret line="52" column="40" selection-start-line="52" selection-start-column="40" selection-end-line="52" selection-end-column="40" />
           <folding>
             <element signature="e#0#15#0" expanded="true" />
           </folding>
@@ -642,13 +666,26 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/wintest/permanent.log">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1459" />
-      </provider>
+      <provider selected="true" editor-type-id="text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/wintest/temporary.log">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/automationwebserver.service">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-3304" />
+        <state relative-caret-position="135">
+          <caret line="9" column="5" lean-forward="true" selection-start-line="9" selection-start-column="5" selection-end-line="9" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/docs/designnotes.txt">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/docs/181209extranotes.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="510">
+          <caret line="34" column="41" selection-start-line="34" selection-start-column="41" selection-end-line="34" selection-end-column="41" />
+        </state>
       </provider>
     </entry>
   </component>

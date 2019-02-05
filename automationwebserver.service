@@ -1,0 +1,10 @@
+[Unit]
+ Description=Automation Web Server Service
+ After=multi-user.target
+
+ [Service]
+ Type=idle
+ ExecStart=/usr/bin/python3 /home/pi/AutomationWebServerCode /home/pi/automationwebserver.ini
+
+ [Install]
+ WantedBy=multi-user.target
