@@ -110,11 +110,9 @@ Each response is a single UDP packet only.
                                         )
         self.max_realtime_rows = realtime_info.getint("max_rows")
 
-#        self.table_realtime = realtime_info["tablename"]
         self.db_history = DBautomation(history_info["user"], history_info["password"], database_info["HostAddress"],
                                         database_info.getint("HostPort"), history_info["databasename"]
                                         )
- #       self.table_history = history_info["tablename"]
 
     def __enter__(self):
         return self
@@ -132,7 +130,7 @@ Each response is a single UDP packet only.
         :return:
         """
         self.socket_datastream.sendto(b"!r", self.ip_port_arduino_datastream)
-#        self.socket_datastream.sendto("!s", self.ip_port_arduino_datastream)
+        self.socket_datastream.sendto("!s", self.ip_port_arduino_datastream)
 
     def parse_message(self, structname, data):
         try:
@@ -165,7 +163,9 @@ Each response is a single UDP packet only.
             table_name = self.configuration.get["SensorReadings"]["tablename"]
             self.db_realtime.write_single_row_fifo(tablename=table_name, data=msg, maxrows=self.max_realtime_rows)
         elif data[1:2] == b"s":
-            self.parse_message("SystemStatus", data[3:-1])
+            msg = self.parse_message("SystemStatus", data[3:-1])
+            table_name = self.configuration.get["SystemStatus"]["tablename"]
+            self.db_realtime.write_single_row_fifo(tablename=table_name, data=msg, maxrows=self.max_realtime_rows)
         elif data[1:2] == b"p":
             self.parse_message("ParameterInformation", data[3:-1])
         elif data[1:2] == b"l":

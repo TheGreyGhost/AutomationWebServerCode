@@ -12,16 +12,16 @@ if __name__ == '__main__':
                " Errors written to the logfiles specified in the .ini config file.")
     parser.add_argument("-d", "--debug", help="print debugging information", action="store_true")
     parser.add_argument("initfile", help="the configuration ini file to use")
-    parser.add_argument("-ic", "--initfilecreate", help="create default configuration ini file if none found" \
-                                                        " (you must manually edit database names and passwords)"
-                        , action="store_true")
+    # parser.add_argument("-ic", "--initfilecreate", help="create default configuration ini file if none found" \
+    #                                                     " (you must manually edit database names and passwords)"
+    #                     , action="store_true")
     parser.add_argument("-t", "--testresponse", help="use the indicated file as a command response", default="")
     args = parser.parse_args()
 
     configuration = Configuration()
     try:
-        if args.initfilecreate:
-            Configuration.generate_file_if_doesnt_exist(args.initfile)
+        # if args.initfilecreate:
+        #     Configuration.generate_file_if_doesnt_exist(args.initfile)
         configuration.initialise_from_file(args.initfile)
         templogginglevel = logging.DEBUG if args.debug else logging.INFO
         errorhandler.initialise("automationwebserver",
