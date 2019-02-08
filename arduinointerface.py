@@ -130,7 +130,7 @@ Each response is a single UDP packet only.
         :return:
         """
         self.socket_datastream.sendto(b"!r", self.ip_port_arduino_datastream)
-        self.socket_datastream.sendto("!s", self.ip_port_arduino_datastream)
+        self.socket_datastream.sendto(b"!s", self.ip_port_arduino_datastream)
 
     def parse_message(self, structname, data):
         try:
@@ -198,6 +198,8 @@ Each response is a single UDP packet only.
             else:
                 errorhandler.logdebug("msg received:{}".format(data.hex()))
                 self.parse_incoming_message(data)
+
+    def perform_clock_synchronisation
 
     def set_test_response(self, response_msg_filename):
         with open(response_msg_filename, mode='rb') as file:  # b is important -> binary
