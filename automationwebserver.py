@@ -83,7 +83,7 @@ if __name__ == '__main__':
                     errorhandler.logwarn(repr(e))
                     next_request_time = last_request_time + WAIT_TIME_MSG_ERROR
                 except mysql.connector.Error as err:
-                    errorhandler.logwarn(repr(e))
+                    errorhandler.logwarn(repr(err))
                     next_request_time = last_request_time + WAIT_TIME_MSG_ERROR
             time.sleep(1)
 
