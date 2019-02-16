@@ -199,7 +199,7 @@ Each response is a single UDP packet only.
                 errorhandler.logdebug("msg received:{}".format(data.hex()))
                 self.parse_incoming_message(data)
 
-    def perform_clock_synchronisation
+#    def perform_clock_synchronisation
 
     def set_test_response(self, response_msg_filename):
         with open(response_msg_filename, mode='rb') as file:  # b is important -> binary

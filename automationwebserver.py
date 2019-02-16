@@ -5,6 +5,7 @@ from configuration import Configuration
 import arduinointerface
 import time
 import logging
+import mysql.connector
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
@@ -79,6 +80,9 @@ if __name__ == '__main__':
                     errorhandler.loginfo(e)
                     next_request_time = last_request_time + WAIT_TIME_MSG_ERROR
                 except ValueError as e:
+                    errorhandler.logwarn(repr(e))
+                    next_request_time = last_request_time + WAIT_TIME_MSG_ERROR
+                except mysql.connector.Error as err:
                     errorhandler.logwarn(repr(e))
                     next_request_time = last_request_time + WAIT_TIME_MSG_ERROR
             time.sleep(1)

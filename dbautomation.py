@@ -54,24 +54,29 @@ class DBautomation:
         :param maxrows: maximum number of rows to retain in the table
         :return:
         """
-        fieldnames = ",".join(name for name in data._fields)
-        values = ",".join(str(i) for i in data)
-        timenow = time.time()
-        insertSQL = "INSERT INTO {tablename} (timestamp,{fieldnames}) VALUES ({timestamp},{values});"\
-            .format(tablename=tablename, fieldnames=fieldnames, timestamp=timenow, values=values)
-        self.m_cursor.execute(insertSQL)
+        try:
+            fieldnames = ",".join(name for name in data._fields)
+            values = ",".join(str(i) for i in data)
+            timenow = time.time()
+            insertSQL = "INSERT INTO {tablename} (timestamp,{fieldnames}) VALUES ({timestamp},{values});"\
+                .format(tablename=tablename, fieldnames=fieldnames, timestamp=timenow, values=values)
+            self.m_cursor.execute(insertSQL)
 
-        findrowcountSQL = "SELECT entry_number FROM {tablename} "\
-                " ORDER BY entry_number DESC LIMIT {first_row_to_delete}, 1;"\
-                .format(tablename=tablename, first_row_to_delete=maxrows)
-        self.m_cursor.execute(findrowcountSQL)
-        youngest_row_to_delete = self.m_cursor.fetchone()
-        if not youngest_row_to_delete is None:
-            deleteSQL = "DELETE FROM {tablename} WHERE entry_number <= {youngest_to_delete};"\
-                        .format(tablename=tablename, youngest_to_delete=youngest_row_to_delete[0])
-            self.m_cursor.execute(deleteSQL)
+            findrowcountSQL = "SELECT entry_number FROM {tablename} "\
+                    " ORDER BY entry_number DESC LIMIT {first_row_to_delete}, 1;"\
+                    .format(tablename=tablename, first_row_to_delete=maxrows)
+            self.m_cursor.execute(findrowcountSQL)
+            youngest_row_to_delete = self.m_cursor.fetchone()
+            if not youngest_row_to_delete is None:
+                deleteSQL = "DELETE FROM {tablename} WHERE entry_number <= {youngest_to_delete};"\
+                            .format(tablename=tablename, youngest_to_delete=youngest_row_to_delete[0])
+                self.m_cursor.execute(deleteSQL)
 
-        self.m_db.commit()
+            self.m_db.commit()
+
+        except mysql.connector.Error as err:
+            errorhandler.logdebug("Might be related to insertSQL which is:{}".format(insertSQL))
+            raise
 
 #     def log_common(self, tablename, logfield, entries, timestart, timefinish):
 #         if self.db is None or self.cursor is None:
