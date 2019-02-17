@@ -53,21 +53,27 @@ class DBautomation:
         :param data: dictionary containing the data to be written into the db (a single row).
         :param maxrows: maximum number of rows to retain in the table
         :return:
+        https://dev.mysql.com/doc/connector-python/en/connector-python-api-mysqlcursor-execute.html
         """
+
+        timenow = time.time()
+        datacopy = data.copy()
+        datacopy["timestamp"] = timenow
+
         try:
             firstentry = True
-            for key, value in data.items():
+            for key, value in datacopy.items():
                 if firstentry:
                     fieldnames = key
-                    values = str(value)
+                    values = "%(" + key + ")s"
                     firstentry = False
                 else:
                     fieldnames = fieldnames + "," + key
-                    values = values + "," + str(value)
-            timenow = time.time()
-            insertSQL = "INSERT INTO {tablename} (timestamp,{fieldnames}) VALUES ({timestamp},{values});"\
-                .format(tablename=tablename, fieldnames=fieldnames, timestamp=timenow, values=values)
-            self.m_cursor.execute(insertSQL)
+                    values = values + "," + "%(" + key + ")s"
+            insertSQL = "INSERT INTO {tablename} ({fieldnames}) VALUES ({values});"\
+                .format(tablename=tablename, fieldnames=fieldnames, values=values)
+            errorhandler.logdebug("INSERT:{}".format(insertSQL))
+            self.m_cursor.execute(insertSQL, datacopy)
 
             findrowcountSQL = "SELECT entry_number FROM {tablename} "\
                     " ORDER BY entry_number DESC LIMIT {first_row_to_delete}, 1;"\
