@@ -150,6 +150,7 @@ Each response is a single UDP packet only.
             message = message_struct._make(struct.unpack(structinfo["unpackformat"], data))
             errorhandler.logdebug("unpacked message:{}".format(repr(message)))
             cleaned_message = self.replace_nan_with_none(message._asdict())
+            errorhandler.logdebug("cleaned message:{}".format(repr(cleaned_message)))
             return cleaned_message
         except struct.error as e:
             raise errorhandler.ArduinoMessageError("invalid msg for {}:{}".format(structname, str(e)))
