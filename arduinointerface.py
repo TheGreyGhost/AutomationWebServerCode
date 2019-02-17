@@ -138,6 +138,7 @@ Each response is a single UDP packet only.
             if type(value) is float and math.isnan(value):
                 message[key] = None
 
+
     def parse_message(self, structname, data):
         """
         :param structname: the name of the structure used for the message (to be retrieved from configuration)
@@ -149,9 +150,9 @@ Each response is a single UDP packet only.
             message_struct = namedtuple(structname, structinfo["fieldnames"])
             message = message_struct._make(struct.unpack(structinfo["unpackformat"], data))
             errorhandler.logdebug("unpacked message:{}".format(repr(message)))
-            cleaned_message = self.replace_nan_with_none(message._asdict())
-            errorhandler.logdebug("cleaned message:{}".format(repr(cleaned_message)))
-            return cleaned_message
+            self.replace_nan_with_none(message._asdict())
+            errorhandler.logdebug("cleaned message:{}".format(repr(message)))
+            return message
         except struct.error as e:
             raise errorhandler.ArduinoMessageError("invalid msg for {}:{}".format(structname, str(e)))
 
