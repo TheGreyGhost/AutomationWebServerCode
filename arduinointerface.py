@@ -5,6 +5,7 @@ import struct
 from collections import namedtuple
 from configuration import Configuration
 from dbautomation import DBautomation
+import math
 
 MAX_EXPECTED_MSG_SIZE = 1024
 
@@ -148,7 +149,7 @@ Each response is a single UDP packet only.
             message_struct = namedtuple(structname, structinfo["fieldnames"])
             message = message_struct._make(struct.unpack(structinfo["unpackformat"], data))
             errorhandler.logdebug("unpacked message:{}".format(repr(message)))
-            cleaned_message = replace_nan_with_none(message._asdict())
+            cleaned_message = self.replace_nan_with_none(message._asdict())
             return cleaned_message
         except struct.error as e:
             raise errorhandler.ArduinoMessageError("invalid msg for {}:{}".format(structname, str(e)))
