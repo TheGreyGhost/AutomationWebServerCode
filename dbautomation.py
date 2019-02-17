@@ -56,7 +56,7 @@ class DBautomation:
         """
         try:
             firstentry = True
-            for key, value in data:
+            for key, value in data.items():
                 if firstentry:
                     fieldnames = key
                     values = str(value)
