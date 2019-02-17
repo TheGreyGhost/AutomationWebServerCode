@@ -132,13 +132,24 @@ Each response is a single UDP packet only.
         self.socket_datastream.sendto(b"!r", self.ip_port_arduino_datastream)
         self.socket_datastream.sendto(b"!s", self.ip_port_arduino_datastream)
 
+    def replace_nan_with_none(self, message):
+        for key, value in message.items():
+            if type(value) is float and math.isnan(value):
+                message[key] = None
+
     def parse_message(self, structname, data):
+        """
+        :param structname: the name of the structure used for the message (to be retrieved from configuration)
+        :param data: the binary data stream
+        :return: ordered dict of the message fields
+        """
         try:
             structinfo = self.configuration.get[structname]
             message_struct = namedtuple(structname, structinfo["fieldnames"])
             message = message_struct._make(struct.unpack(structinfo["unpackformat"], data))
             errorhandler.logdebug("unpacked message:{}".format(repr(message)))
-            return message
+            cleaned_message = replace_nan_with_none(message._asdict())
+            return cleaned_message
         except struct.error as e:
             raise errorhandler.ArduinoMessageError("invalid msg for {}:{}".format(structname, str(e)))
 

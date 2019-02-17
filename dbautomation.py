@@ -50,13 +50,20 @@ class DBautomation:
         writes the given data into the database; overwrites the existing row
         adds an autoincrement primary key
         :param tablename: table to write into
-        :param data: named tuple containing the data to be written into the db (a single row)
+        :param data: dictionary containing the data to be written into the db (a single row).
         :param maxrows: maximum number of rows to retain in the table
         :return:
         """
         try:
-            fieldnames = ",".join(name for name in data._fields)
-            values = ",".join(str(i) for i in data)
+            firstentry = True
+            for key, value in data:
+                if firstentry:
+                    fieldnames = key
+                    values = str(value)
+                    firstentry = False
+                else:
+                    fieldnames = fieldnames + "," + key
+                    values = values + "," + str(value)
             timenow = time.time()
             insertSQL = "INSERT INTO {tablename} (timestamp,{fieldnames}) VALUES ({timestamp},{values});"\
                 .format(tablename=tablename, fieldnames=fieldnames, timestamp=timenow, values=values)

@@ -11,4 +11,6 @@ This allows it to receive messages on that interface and port.
 A client which calls sendto before recvfrom doesn't need to explicitly bind because the sendto performs an implicit bind
 with a random port.
 
+Unpacking binary data to a tuple
+https://docs.python.org/3.6/library/struct.html#struct.unpack
 
