@@ -36,6 +36,7 @@ class DBautomation:
         if not self.m_db is None:
             self.m_db.close()
 
+
     # def set_fifo_mode(self, maxrows):
     #     """
     #     turn on First In First Out with specified max number of rows; old rows are deleted as new are inserted

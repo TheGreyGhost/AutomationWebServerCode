@@ -7,6 +7,62 @@ import time
 import logging
 import mysql.connector
 
+def poll_arduino_loop():
+
+    serious_error_count = 0
+    arduino = arduinointerface.Arduino(configuration)
+
+    if args.testresponse:
+        arduino.set_test_response(args.testresponse)
+
+    WAIT_TIME_FOR_REPLY = 10  # seconds to wait for a reply to our request
+    WAIT_TIME_IO_ERROR = 60  # seconds to pause if we get an IO error
+    WAIT_TIME_MSG_ERROR = 60  # seconds to pause if we get an incorrect message
+    POLL_TIME = 10  # number of seconds to wait before sending another request
+    MAX_SERIOUS_ERRORS = 3 # max # of serious errors (eg database connection lost) before exit.
+
+    last_request_time = time.time()
+    next_request_time = last_request_time
+    while True:
+        if time.time() >= next_request_time:
+            try:
+                arduino.request_realtime_info()
+                last_request_time = time.time()
+                next_request_time += POLL_TIME
+                if next_request_time < last_request_time:
+                    next_request_time = last_request_time + POLL_TIME
+
+                gotmsg = False
+                while time.time() < last_request_time + WAIT_TIME_FOR_REPLY:
+                    gotmsg = arduino.check_for_incoming_info()
+                    if gotmsg:
+                        break
+                    time.sleep(1)
+                errorhandler.logdebug("got reply" if gotmsg else "timeout waiting for reply")
+                if not gotmsg:
+                    next_request_time = last_request_time + WAIT_TIME_IO_ERROR
+
+            except IOError as e:
+                errorhandler.logwarn("I/O error occurred ({0}): {1}".format(e.errno, e.strerror))
+                next_request_time = last_request_time + WAIT_TIME_IO_ERROR
+            except errorhandler.ArduinoMessageError as e:
+                errorhandler.loginfo(e)
+                next_request_time = last_request_time + WAIT_TIME_MSG_ERROR
+            except ValueError as e:
+                errorhandler.logwarn(repr(e))
+                next_request_time = last_request_time + WAIT_TIME_MSG_ERROR
+            except mysql.connector.OperationalError as e:
+                errorhandler.logwarn(repr(e))
+                next_request_time = last_request_time + WAIT_TIME_IO_ERROR
+                serious_error_count += 1
+                if serious_error_count >= MAX_SERIOUS_ERRORS:
+                    return
+            except mysql.connector.Error as err:
+                errorhandler.logwarn(repr(err))
+                next_request_time = last_request_time + WAIT_TIME_MSG_ERROR
+        time.sleep(1)
+    return
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         epilog="Transfers information from the arduino to MySQL database using UDP messages." \
@@ -44,48 +100,8 @@ if __name__ == '__main__':
         raise
 
     try:
-        arduino = arduinointerface.Arduino(configuration)
-
-        if args.testresponse:
-            arduino.set_test_response(args.testresponse)
-
-        WAIT_TIME_FOR_REPLY = 10  # seconds to wait for a reply to our request
-        WAIT_TIME_IO_ERROR = 60  # seconds to pause if we get an IO error
-        WAIT_TIME_MSG_ERROR = 60  # seconds to pause if we get an incorrect message
-        POLL_TIME = 10  # number of seconds to wait before sending another request
-
-        last_request_time = time.time()
-        next_request_time = last_request_time
         while True:
-            if time.time() >= next_request_time:
-                try:
-                    arduino.request_realtime_info()
-                    last_request_time = time.time()
-                    next_request_time += POLL_TIME
-                    if next_request_time < last_request_time:
-                        next_request_time = last_request_time + POLL_TIME
-
-                    gotmsg = False
-                    while time.time() < last_request_time + WAIT_TIME_FOR_REPLY:
-                        gotmsg = arduino.check_for_incoming_info()
-                        if gotmsg:
-                            break
-                        time.sleep(1)
-                    errorhandler.logdebug("got reply" if gotmsg else "timeout waiting for reply")
-
-                except IOError as e:
-                    errorhandler.logwarn("I/O error occurred ({0}): {1}".format(e.errno, e.strerror))
-                    next_request_time = last_request_time + WAIT_TIME_IO_ERROR
-                except errorhandler.ArduinoMessageError as e:
-                    errorhandler.loginfo(e)
-                    next_request_time = last_request_time + WAIT_TIME_MSG_ERROR
-                except ValueError as e:
-                    errorhandler.logwarn(repr(e))
-                    next_request_time = last_request_time + WAIT_TIME_MSG_ERROR
-                except mysql.connector.Error as err:
-                    errorhandler.logwarn(repr(err))
-                    next_request_time = last_request_time + WAIT_TIME_MSG_ERROR
-            time.sleep(1)
+            poll_arduino_loop()
 
     except:
         errorhandler.exception("Caught exception in main")
