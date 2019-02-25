@@ -6,6 +6,7 @@ from collections import namedtuple
 from configuration import Configuration
 from dbautomation import DBautomation
 import math
+import time
 
 MAX_EXPECTED_MSG_SIZE = 1024
 
@@ -132,6 +133,16 @@ Each response is a single UDP packet only.
         """
         self.socket_datastream.sendto(b"!r", self.ip_port_arduino_datastream)
         self.socket_datastream.sendto(b"!s", self.ip_port_arduino_datastream)
+
+    def synchronise_time(self):
+        """
+           Sends the current time to the Arduino to allow it to sync up.  Doesn't wait for a reply.
+        :return: true for success, false if the time isn't available
+        """
+        timenow = time.time()
+
+
+
 
     def replace_nan_with_none(self, message):
         for key, value in message.items():
