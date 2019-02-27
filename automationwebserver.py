@@ -100,6 +100,7 @@ if __name__ == '__main__':
         raise
 
     try:
+        errorhandler.logerror("Succesful start")
         while True:
             poll_arduino_loop()
 
