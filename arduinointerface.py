@@ -179,10 +179,10 @@ Each response is a single UDP packet only.
             raise errorhandler.ArduinoMessageError("msg didn't start with !")
         if data[2] != ord(self.protocol_version):
             raise errorhandler.ArduinoMessageError("protocol mismatch: expected {} received 0x{}"
-                                                   .format(self.protocol_version, data[2].hex()))
+                                                   .format(self.protocol_version, hex(data[2])))
 
         if data[-1] != 0:
-            raise errorhandler.ArduinoMessageError("message error code was nonzero:{}", data[-1].hex())
+            raise errorhandler.ArduinoMessageError("message error code was nonzero:{}", hex(data[-1]))
 
         if data[1:2] == b"r":
             msg = self.parse_message("SensorReadings", data[3:-1])
@@ -199,7 +199,7 @@ Each response is a single UDP packet only.
         elif data[1:2] == b"n":
             self.parse_message("NumberOfLogfileEntries", data[3:-1])
         else:
-            raise errorhandler.ArduinoMessageError("invalid response command letter: {}".format(data[1].hex()))
+            raise errorhandler.ArduinoMessageError("invalid response command letter: {}".format(hex(data[1])))
 
     def check_for_incoming_info(self):
         """
