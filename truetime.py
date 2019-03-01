@@ -89,8 +89,10 @@ class TrueTime:
 # NTP synchronized: yes
 #  RTC in local TZ: no
             for line in result.stdout.decode():
+                print(line)
                 tokens = line.split(':')
                 if len(tokens) == 2 and NTP_SYNCHRONISED in tokens[0]:
+                    print(repr(tokens))
                     if SYNCH_YES in tokens[1]:
                         return True
                     if SYNCH_NO in tokens[1]:
