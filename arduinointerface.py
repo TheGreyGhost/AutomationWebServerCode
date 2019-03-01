@@ -102,7 +102,7 @@ Each response is a single UDP packet only.
         self.socket_datastream.bind((ip_rpi, port_rpi_datastream))
         self.ip_port_arduino_datastream = (ip_arduino, port_arduino_datastream)
 
-        self.protocol_version = i_configuration.get["DataTransfer"]["ProtocolVersion"]
+        self.protocol_version = bytes(i_configuration.get["DataTransfer"]["ProtocolVersion"][0], 'utf-8')
 
         database_info = i_configuration.get["Databases"]
         realtime_info = i_configuration.get["REALTIME"]
