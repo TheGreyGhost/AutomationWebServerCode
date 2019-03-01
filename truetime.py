@@ -78,7 +78,7 @@ class TrueTime:
         SYNCH_YES = "yes"
         SYNCH_NO = "no"
         try:
-            result = subprocess.run("timedatectl", text=True, stdout=subprocess.PIPE, check=True, timeout=self.m_max_timeout)
+            result = subprocess.run("timedatectl", stdout=subprocess.PIPE, check=True, timeout=self.m_max_timeout)
 #             result = subprocess.run("timedatectl", stdout=subprocess.PIPE, check=True,
 #                                     text=True, timeout=self.m_max_timeout)
 # #       Local time: Fri 2019-03-01 19:30:31 ACDT
@@ -88,7 +88,7 @@ class TrueTime:
 #  Network time on: yes
 # NTP synchronized: yes
 #  RTC in local TZ: no
-            for line in result.stdout:
+            for line in result.stdout.decode():
                 tokens = line.split(':')
                 if len(tokens) == 2 and NTP_SYNCHRONISED in tokens[0]:
                     if SYNCH_YES in tokens[1]:
