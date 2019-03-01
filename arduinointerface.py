@@ -29,12 +29,12 @@ class Arduino:
 
 Datastream commands:
 /*
-!r = request current sensor information (readings)
-!s = system status
-!p = request parameter information
-!l{dword row nr}{word count} in LSB first order = request entries from log file
-!n = request number of entries in log file
-!c = cancel transmissions (log file)
+!r{version} = request current sensor information (readings)
+!s{version} = system status
+!p{version} = request parameter information
+!l{version}{dword row nr}{word count} in LSB first order = request entries from log file
+!n{version} = request number of entries in log file
+!c{version} = cancel transmissions (log file)
 
 response:
 !{command letter echoed}{byte version} then:
@@ -131,8 +131,8 @@ Each response is a single UDP packet only.
            Asks the arduino to send the current status information and sensor information.  Doesn't wait for a reply.
         :return:
         """
-        self.socket_datastream.sendto(b"!r", self.ip_port_arduino_datastream)
-        self.socket_datastream.sendto(b"!s", self.ip_port_arduino_datastream)
+        self.socket_datastream.sendto(b"!r" + self.protocol_version, self.ip_port_arduino_datastream)
+        self.socket_datastream.sendto(b"!s" + self.protocol_version, self.ip_port_arduino_datastream)
 
     def synchronise_time(self):
         """
