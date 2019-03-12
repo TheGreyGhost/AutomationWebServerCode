@@ -1,2 +1,13 @@
 2019-02-17 01:51:34.727 - automationwebserver.temp - DEBUG - Might be related to insertSQL which is:INSERT INTO PoolHeaterSensorValues (timestamp,sim_flags,solar_intensity,cumulative_insolation,surge_tank_ok,pump_runtime,hx_hot_inlet_inst,hx_hot_inlet_smooth,hx_hot_outlet_inst,hx_hot_outlet_smooth,hx_cold_inlet_inst,hx_cold_inlet_smooth,hx_cold_outlet_inst,hx_cold_outlet_smooth,temp_ambient_inst,temp_ambient_smooth,last_sampled_temperature_valid,last_sampled_temperature,last_sampled_temperature_time) VALUES (1550330494.7255754,0,nan,0.0,True,0.0,21.8125,21.8125,20.75,20.747013092041016,22.1875,22.172527313232422,22.1875,22.1875,20.4375,20.4375,False,0.0,0);
 2019-02-17 01:51:34.728 - automationwebserver.temp - WARNING - ProgrammingError(1054, "1054 (42S22): Unknown column 'nan' in 'field list'", '42S22')
+
+12 Mar 2019
+Arduino stopped responding to queries
+- I did a request from 192.168.1.220; up to date
+- Then a few more; didn't update for 1 minute but then ok
+- After that, no update for at least 1 h:
+log says timeout waiting for reply
+- tried nc -u -l 53201 and nc -u 192.168.2.35 53201 however no response.  No flashing lights on Arduino.
+Unplugged cat5 cable between Arduino and RPi.  Comms recommenced at next attempt (2 min later).  !d shows no problems
+
+

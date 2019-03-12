@@ -115,10 +115,11 @@ Each response is a single UDP packet only.
         self.max_realtime_rows = realtime_info.getint("max_rows")
 
         self.db_history = DBautomation(history_info["user"], history_info["password"], database_info["HostAddress"],
-                                        database_info.getint("HostPort"), history_info["databasename"]
-                                        )
-	   truetime_info = i_configuration.get["TimeServer"]	
-	   true_time = truetime.TrueTime(truetime_info["max_timeout_seconds")	
+                                       database_info.getint("HostPort"), history_info["databasename"]
+                                       )
+        truetime_info = i_configuration.get["TimeServer"]
+        true_time = truetime.TrueTime(truetime_info["max_timeout_seconds"])
+
 
     def __enter__(self):
         return self
@@ -143,44 +144,45 @@ Each response is a single UDP packet only.
            Sends the current time to the Arduino to allow it to sync up.  Doesn't wait for a reply.
         :return: true for success, false if the time isn't available
         """
- 	   try:
-	   	time_and_zone = self.true_time.get_true_time()
-		msg = b"!t" + self.protocol_version + time_and_zone.time.to_bytes(length=4, byteorder=little, signed=False)
-				  + time_and_zone.timezone.to_bytes(length=4, byteorder=little, signed=true)
-		self.socket_datastream.sendto(msg, self.ip_port_arduino_datastream)
- 	   except truetime.TimeServerError:
-		return False		
+        try:
+            time_and_zone = self.true_time.get_true_time()
+            msg = b"!t" + self.protocol_version \
+                  + time_and_zone.time.to_bytes(length=4, byteorder="little", signed=False) \
+                  + time_and_zone.timezone.to_bytes(length=4, byteorder="little", signed=True)
+            self.socket_datastream.sendto(msg, self.ip_port_arduino_datastream)
+        except truetime.TimeServerError as e:
+            return False
 
-	def request_historical_data(self):
-# !l{dword row nr}{word count} in LSB first order = request entries from log file
-# !n = request number of entries in log file
-# !c = cancel transmissions (log file)
+    def request_historical_data(self):
+        # !l{dword row nr}{word count} in LSB first order = request entries from log file
+        # !n = request number of entries in log file
+        # !c = cancel transmissions (log file)
 
-basic algorithm is:
-1) find out how many entries in log file.
-2) find first timestamp in log file
-3) look up first_sequence_number for this timestamp
-4) look for gaps in the database and request these in chunks.  Wait until chunk is fully received or timeout.
-Gap looking algorithm:
-count on where sequence number is a given range: if count is less than expected, narrow down by halves until the missing parts are identified or the incomplete chunk size is <= 100
-5) once swept through them in order, wait a short time then repeat the algorithm
-when data are incoming, insert into a RAM table first then chunk to the main database periodically?
-
-Store in database:
-1) A unique sequence number
-2) The log file index number
-3) timestamp
-
-Keep in a second table: 
-each row is a unique combination of first log file entry, i.e.
-1) timestamp
-2) sequence number corresponding to the first entry of this logfile
+        # basic algorithm is:
+        # 1) find out how many entries in log file.
+        # 2) find first timestamp in log file
+        # 3) look up first_sequence_number for this timestamp
+        # 4) look for gaps in the database and request these in chunks.  Wait until chunk is fully received or timeout.
+        # Gap looking algorithm:
+        # count on where sequence number is a given range: if count is less than expected, narrow down by halves until the missing parts are identified or the incomplete chunk size is <= 100
+        # 5) once swept through them in order, wait a short time then repeat the algorithm
+        # when data are incoming, insert into a RAM table first then chunk to the main database periodically?
+        #
+        # Store in database:
+        # 1) A unique sequence number
+        # 2) The log file index number
+        # 3) timestamp
+        #
+        # Keep in a second table:
+        # each row is a unique combination of first log file entry, i.e.
+        # 1) timestamp
+        # 2) sequence number corresponding to the first entry of this logfile
+        pass
 
     def replace_nan_with_none(self, message):
         for key, value in message.items():
             if type(value) is float and math.isnan(value):
                 message[key] = None
-
 
     def parse_message(self, structname, data):
         """

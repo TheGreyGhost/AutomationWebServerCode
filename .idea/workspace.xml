@@ -2,8 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="1d4b3084-bbba-4f4c-8398-a08dbd9b278b" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/arduinointerface.py" beforeDir="false" afterPath="$PROJECT_DIR$/arduinointerface.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/debugnotes.txt" beforeDir="false" afterPath="$PROJECT_DIR$/docs/debugnotes.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/historicaldata.py" beforeDir="false" afterPath="$PROJECT_DIR$/historicaldata.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/truetime.py" beforeDir="false" afterPath="$PROJECT_DIR$/truetime.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -70,25 +73,11 @@
       <file leaf-file-name="automationwebserver.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/automationwebserver.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="750">
-              <caret line="57" column="61" selection-start-line="57" selection-start-column="61" selection-end-line="57" selection-end-column="61" />
+            <state relative-caret-position="435">
+              <caret line="36" column="46" selection-start-line="36" selection-start-column="46" selection-end-line="36" selection-end-column="46" />
               <folding>
                 <element signature="e#0#15#0" expanded="true" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="permanent.log" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/wintest/permanent.log">
-          <provider selected="true" editor-type-id="text-editor" />
-        </entry>
-      </file>
-      <file leaf-file-name="temporary.log" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/wintest/temporary.log">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="405">
-              <caret line="27" selection-start-line="27" selection-end-line="27" />
             </state>
           </provider>
         </entry>
@@ -135,8 +124,26 @@
       <file leaf-file-name="arduinointerface.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/arduinointerface.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="480">
-              <caret line="104" column="105" selection-start-line="104" selection-start-column="105" selection-end-line="104" selection-end-column="105" />
+            <state relative-caret-position="2065">
+              <caret line="263" column="38" lean-forward="true" selection-start-line="263" selection-start-column="38" selection-end-line="263" selection-end-column="38" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="builtins.py" pinned="false" current-in-tab="false">
+        <entry file="file://$USER_HOME$/.PyCharmCE2018.1/system/python_stubs/1967125826/builtins.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="324">
+              <caret line="1054" column="32" selection-start-line="1054" selection-start-column="26" selection-end-line="1054" selection-end-column="32" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="truetime.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/truetime.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="930">
+              <caret line="62" column="48" selection-start-line="62" selection-start-column="48" selection-end-line="62" selection-end-column="48" />
               <folding>
                 <element signature="e#0#13#0" expanded="true" />
               </folding>
@@ -144,13 +151,20 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ntptime.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/ntptime.py">
+      <file leaf-file-name="historicaldata.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/historicaldata.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-155">
-              <caret line="25" column="17" lean-forward="true" selection-start-line="25" selection-start-column="17" selection-end-line="25" selection-end-column="17" />
+            <state relative-caret-position="940">
+              <caret line="65" selection-start-line="65" selection-end-line="65" />
               <folding>
                 <element signature="e#0#13#0" expanded="true" />
+                <marker date="1552370423251" expanded="true" signature="282:285" ph="..." />
+                <marker date="1552370423251" expanded="true" signature="321:324" ph="..." />
+                <marker date="1552370423251" expanded="true" signature="365:368" ph="..." />
+                <marker date="1552370423251" expanded="true" signature="390:393" ph="..." />
+                <marker date="1552370423251" expanded="true" signature="404:410" ph="..." />
+                <marker date="1552370423251" expanded="true" signature="476:482" ph="..." />
+                <marker date="1552370423251" expanded="true" signature="520:523" ph="..." />
               </folding>
             </state>
           </provider>
@@ -170,6 +184,7 @@
       <find>simflags</find>
       <find>StorageTypes</find>
       <find>hex()</find>
+      <find>little</find>
     </findStrings>
     <dirStrings>
       <dir>C:\Users\Richard\PycharmProjects\AutomationWebserverCode</dir>
@@ -199,6 +214,8 @@
         <option value="$PROJECT_DIR$/configuration.py" />
         <option value="$PROJECT_DIR$/automationwebserver.py" />
         <option value="$PROJECT_DIR$/ntptime.py" />
+        <option value="$PROJECT_DIR$/truetime.py" />
+        <option value="$PROJECT_DIR$/historicaldata.py" />
         <option value="$PROJECT_DIR$/arduinointerface.py" />
       </list>
     </option>
@@ -215,7 +232,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -232,6 +248,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -313,13 +330,13 @@
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1186" extended-state="6" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.20052083" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.20052083" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
       <window_info anchor="bottom" id="Find" order="1" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.3295583" />
       <window_info anchor="bottom" id="Version Control" order="9" />
-      <window_info active="true" anchor="bottom" id="Python Console" order="7" visible="true" weight="0.32919848" />
+      <window_info anchor="bottom" id="Python Console" order="7" weight="0.32919848" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="bottom" id="Terminal" order="8" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.3997735" />
@@ -341,30 +358,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/wintest/wintest.ini">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="480">
-          <caret line="32" column="12" selection-start-line="32" selection-start-column="12" selection-end-line="32" selection-end-column="34" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/configuration.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="480">
-          <caret line="34" column="57" selection-start-line="34" selection-start-column="57" selection-end-line="34" selection-end-column="57" />
-          <folding>
-            <element signature="e#0#19#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/defaultconfig.ini">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
-          <caret line="18" column="7" selection-start-line="18" selection-start-column="7" selection-end-line="18" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/docs/181209extranotes.txt">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="405">
@@ -667,7 +660,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/ntptime.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-155">
+        <state relative-caret-position="315">
           <caret line="25" column="17" lean-forward="true" selection-start-line="25" selection-start-column="17" selection-end-line="25" selection-end-column="17" />
           <folding>
             <element signature="e#0#13#0" expanded="true" />
@@ -675,10 +668,44 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/truetime.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="930">
+          <caret line="62" column="48" selection-start-line="62" selection-start-column="48" selection-end-line="62" selection-end-column="48" />
+          <folding>
+            <element signature="e#0#13#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/historicaldata.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="940">
+          <caret line="65" selection-start-line="65" selection-end-line="65" />
+          <folding>
+            <element signature="e#0#13#0" expanded="true" />
+            <marker date="1552370423251" expanded="true" signature="282:285" ph="..." />
+            <marker date="1552370423251" expanded="true" signature="321:324" ph="..." />
+            <marker date="1552370423251" expanded="true" signature="365:368" ph="..." />
+            <marker date="1552370423251" expanded="true" signature="390:393" ph="..." />
+            <marker date="1552370423251" expanded="true" signature="404:410" ph="..." />
+            <marker date="1552370423251" expanded="true" signature="476:482" ph="..." />
+            <marker date="1552370423251" expanded="true" signature="520:523" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.PyCharmCE2018.1/system/python_stubs/1967125826/builtins.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="324">
+          <caret line="1054" column="32" selection-start-line="1054" selection-start-column="26" selection-end-line="1054" selection-end-column="32" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/automationwebserver.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="750">
-          <caret line="57" column="61" selection-start-line="57" selection-start-column="61" selection-end-line="57" selection-end-column="61" />
+        <state relative-caret-position="435">
+          <caret line="36" column="46" selection-start-line="36" selection-start-column="46" selection-end-line="36" selection-end-column="46" />
           <folding>
             <element signature="e#0#15#0" expanded="true" />
           </folding>
@@ -687,11 +714,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/arduinointerface.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="480">
-          <caret line="104" column="105" selection-start-line="104" selection-start-column="105" selection-end-line="104" selection-end-column="105" />
-          <folding>
-            <element signature="e#0#13#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="2065">
+          <caret line="263" column="38" lean-forward="true" selection-start-line="263" selection-start-column="38" selection-end-line="263" selection-end-column="38" />
         </state>
       </provider>
     </entry>
