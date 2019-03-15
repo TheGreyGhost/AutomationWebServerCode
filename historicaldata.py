@@ -5,13 +5,17 @@ import errorhandler
 import select
 import subprocess
 from collections import namedtuple
+from enum import Enum
+
+CurrentStates = Enum("CurrentStates", "IDLE" "WAITING_FOR_LENGTH" "WAITING_FOR_ROWS")
 
 
 class HistoricalData:
-	m_dbautomation = None
+    m_dbautomation = None
+    m_last_request_ID = 0
 
     def __init__(self, dbautomation):
-      m_dbautomation = dbautomation
+        m_dbautomation = dbautomation
 
 
 	def received_data(data_entry):
