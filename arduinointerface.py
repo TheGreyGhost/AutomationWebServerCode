@@ -118,7 +118,7 @@ Each response is a single UDP packet only.
                                        database_info.getint("HostPort"), history_info["databasename"]
                                        )
         truetime_info = i_configuration.get["TimeServer"]
-        self.true_time = truetime.TrueTime(truetime_info["max_timeout_seconds"])
+        self.true_time = truetime.TrueTime(truetime_info.getint("max_timeout_seconds"))
 
 
     def __enter__(self):
