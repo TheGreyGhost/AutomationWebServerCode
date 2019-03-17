@@ -81,9 +81,8 @@ class TrueTime:
         if self.m_rpi_has_synced or self.check_if_rpi_time_has_synchronised():
             self.m_rpi_has_synced = True
             timeval = time.time()
-        return TimeAndTimezone(time=timeval, timezone=self.get_time_zone(timeval))
-
-    raise TimeServerError("Raspberry Pi time is not synchronised yet")
+            return TimeAndTimezone(time=timeval, timezone=self.get_time_zone(timeval))
+        raise TimeServerError("Raspberry Pi time is not synchronised yet")
 
 
 def check_if_rpi_time_has_synchronised(self):
