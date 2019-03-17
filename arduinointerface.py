@@ -117,7 +117,7 @@ Each response is a single UDP packet only.
         self.db_history = DBautomation(history_info["user"], history_info["password"], database_info["HostAddress"],
                                        database_info.getint("HostPort"), history_info["databasename"]
                                        )
-        truetime_info = i_configuration.get["TimeSynchronisation"]
+        truetime_info = i_configuration.get["TimeServer"]
         self.true_time = truetime.TrueTime(truetime_info["max_timeout_seconds"])
 
 
