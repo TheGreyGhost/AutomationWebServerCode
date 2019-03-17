@@ -147,8 +147,8 @@ Each response is a single UDP packet only.
         try:
             time_and_zone = self.true_time.get_true_time()
             msg = b"!t" + self.protocol_version \
-                  + time_and_zone.time.to_bytes(length=4, byteorder="little", signed=False) \
-                  + time_and_zone.timezone.to_bytes(length=4, byteorder="little", signed=True)
+                  + int(time_and_zone.time).to_bytes(length=4, byteorder="little", signed=False) \
+                  + int(time_and_zone.timezone).to_bytes(length=4, byteorder="little", signed=True)
             self.socket_datastream.sendto(msg, self.ip_port_arduino_datastream)
         except truetime.TimeServerError as e:
             return False
