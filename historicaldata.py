@@ -6,33 +6,52 @@ import select
 import subprocess
 from collections import namedtuple
 from enum import Enum
+import time
 
-CurrentStates = Enum("CurrentStates", "IDLE" "WAITING_FOR_LENGTH" "WAITING_FOR_ROWS")
+CurrentStates = Enum("CurrentStates", "IDLE" "WAITING_FOR_ROWCOUNT" "WAITING_FOR_ROWS")
 
 
 class HistoricalData:
-    m_dbautomation = None
-    m_last_request_ID = 0
+	m_dbautomation = None
+	m_last_request_ID = 0
+	m_current_state = CurrentStates["IDLE"]
+	m_last_action_time = time.time()
+	m_next_action_time = last_action_time
 
-    def __init__(self, dbautomation):
-        m_dbautomation = dbautomation
+	m_row_count = 0
+	m_row_count_time = 0
 
+	REQUEST_ROW_COUNT_TIMEOUT = 30 # timeout after this many seconds of a row count request
 
-	def received_data(data_entry):
+	def __init__(self, dbautomation):
+		m_dbautomation = dbautomation
 
-	def received_cancel(dataSequenceID):
+	def request_row_count(self):
+		self.socket_datastream.sendto(b"!r" + self.protocol_version, self.ip_port_arduino_datastream)
+		self.m_last_action_time = time.time()
+		self.m_next_action_time = self.m_last_action_time + self.REQUEST_ROW_COUNT_TIMEOUT
 
-	def received_end_of_data(dataSequenceID):
+	def received_data(self, data_entry):
 
-	def received_length():
+	def received_cancel(self, dataSequenceID):
 
-	def tick():
+	def received_end_of_data(self, dataSequenceID):
 
+	def received_rowcount(self):
 
+	def tick(self):
+		if self.m_current_state is CurrentStates.IDLE:
+			if time.time() >= self.next_action_time:
 
+		elif self.m_current_state is CurrentStates.WAITING_FOR_ROWCOUNT:
 
-	head_index = 0
-	tail_index = logfile_length
+		elif self.m_current_state is CurrentStates.WAITING_FOR_ROWS:
+
+		else:
+			raise AssertionError("Invalid m_current_state: {}".format(repr(self.m_current_state)))
+
+		head_index = 0
+		tail_index = logfile_length
 
 
 	def find_missing():
