@@ -85,7 +85,7 @@ class TrueTime:
         raise TimeServerError("Raspberry Pi time is not synchronised yet")
 
 
-    def check_if_rpi_time_has_synchronised(self):
+    def check_if_rpi_time_has_synchronised(self, testresult=None):
         """
         checks if the rpi has synchronised itself with an ntp server
         :return: true if synchronised, false if not
@@ -94,7 +94,10 @@ class TrueTime:
         SYNCH_YES = "yes"
         SYNCH_NO = "no"
         try:
-            result = subprocess.run("timedatectl", stdout=subprocess.PIPE, check=True, timeout=self.m_max_timeout)
+            if testresult is None:
+                result = subprocess.run("timedatectl", stdout=subprocess.PIPE, check=True, timeout=self.m_max_timeout)
+            else:
+                result = testresult
             #             result = subprocess.run("timedatectl", stdout=subprocess.PIPE, check=True,
             #                                     text=True, timeout=self.m_max_timeout)
             # #       Local time: Fri 2019-03-01 19:30:31 ACDT
@@ -115,6 +118,8 @@ class TrueTime:
                         return False
                     raise TimeServerError("Unexpected output from timedatectl: {}".format(line))
             raise TimeServerError("Unexpected output from timedatectl: {} not found".format(NTP_SYNCHRONISED))
+        except TimeServerError as tse:
+            raise
         except Exception as e:
             errorhandler.exception(e)
             return False
