@@ -20,9 +20,14 @@ def poll_arduino_loop():
     WAIT_TIME_MSG_ERROR = 60  # seconds to pause if we get an incorrect message
     POLL_TIME = 10  # number of seconds to wait before sending another request
     MAX_SERIOUS_ERRORS = 3 # max # of serious errors (eg database connection lost) before exit.
+    TIME_SYNC_TIME = 24 * 60 * 60  # number of seconds to wait before sending another time sync message
 
     last_request_time = time.time()
     next_request_time = last_request_time
+
+    last_time_sync_time = time.time()
+    next_time_sync_time = last_time_sync_time
+
     while True:
         if time.time() >= next_request_time:
             try:
@@ -60,6 +65,15 @@ def poll_arduino_loop():
             except mysql.connector.Error as err:
                 errorhandler.logwarn(repr(err))
                 next_request_time = last_request_time + WAIT_TIME_MSG_ERROR
+
+        if time.time() >= next_time_sync_time:
+            last_time_sync_time = time.time()
+            next_time_sync_time += TIME_SYNC_TIME
+            if next_time_sync_time < last_time_sync_time:
+                next_time_sync_time = last_time_sync_time + TIME_SYNC_TIME
+            arduino.synchronise_time()
+            # don't wait for a reply, our main polling loop will get it on the next time through
+
         time.sleep(1)
     return
 
@@ -100,9 +114,11 @@ if __name__ == '__main__':
         raise
 
     try:
-        errorhandler.logerror("Succesful start")
+        errorhandler.logerror("Successful start")
         while True:
             poll_arduino_loop()
+            errorhandler.logerror("Unexpected exit from poll_arduino_loop(), waiting for 1 minute then retrying.")
+            time.sleep(60)
 
     except:
         errorhandler.exception("Caught exception in main")

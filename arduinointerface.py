@@ -118,7 +118,7 @@ Each response is a single UDP packet only.
                                        database_info.getint("HostPort"), history_info["databasename"]
                                        )
         truetime_info = i_configuration.get["TimeServer"]
-        true_time = truetime.TrueTime(truetime_info["max_timeout_seconds"])
+        self.true_time = truetime.TrueTime(truetime_info["max_timeout_seconds"])
 
 
     def __enter__(self):
@@ -226,6 +226,9 @@ Each response is a single UDP packet only.
             msg = self.parse_message("SystemStatus", data[3:-1])
             table_name = self.configuration.get["SystemStatus"]["tablename"]
             self.db_realtime.write_single_row_fifo(tablename=table_name, data=msg, maxrows=self.max_realtime_rows)
+        elif data[1:2] == b"t":
+            msg = self.parse_message("TimeSynchronisation", data[3:-1])
+            errorhandler.loginfo("Time synch reply:{}".format(msg))
         elif data[1:2] == b"p":
             self.parse_message("ParameterInformation", data[3:-1])
         elif data[1:2] == b"l":
