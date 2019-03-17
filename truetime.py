@@ -119,7 +119,7 @@ class TrueTime:
                     if SYNCH_NO in tokens[1]:
                         return False
                     raise TimeServerError("Unexpected output from timedatectl: {}".format(line))
-            raise TimeServerError("Unexpected output from timedatectl: {} not found".format(NTP_SYNCHRONISED))
+            raise TimeServerError("Unexpected output from timedatectl: '{}:' not found".format(NTP_SYNCHRONISED))
         except TimeServerError as tse:
             raise
         except Exception as e:
