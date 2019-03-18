@@ -43,7 +43,7 @@ def poll_arduino_loop():
                     if gotmsg:
                         break
                     time.sleep(1)
-                errorhandler.logdebug("got reply" if gotmsg else "timeout waiting for reply")
+                errorhandler.logdebug("got reply" if gotmsg else "timeout waiting for reply to poll request")
                 if not gotmsg:
                     next_request_time = last_request_time + WAIT_TIME_IO_ERROR
 
