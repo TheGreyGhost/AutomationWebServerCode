@@ -17,6 +17,7 @@ class HistoricalData:
 	m_current_state = CurrentStates["IDLE"]
 	m_last_action_time = time.time()
 	m_next_action_time = m_last_action_time
+	m_fingerprint = 0
 
 	m_row_count = 0			# the number of rows in the arduino's datastore
 	m_row_count_time = 0	# the time (unixtime) that the row count was last received
@@ -38,13 +39,22 @@ class HistoricalData:
 		self.m_next_action_time = self.m_last_action_time + self.REQUEST_ROW_COUNT_TIMEOUT
 		self.m_current_state = CurrentStates.WAITING_FOR_ROWCOUNT
 
-	def received_data(self, data_entry):
+	def received_data(self, data_entry, rawdata):
 		"""
 		call this function every time a data entry row is received - adds to the historical data database
 		:param data_entry: named tuple of the row data
 		:return:
 		"""
 		if self.m_current_state is CurrentStates.WAITING_FOR_FIRST_ROW:
+			data_request_ID = int(data_entry["data_request_ID"])
+			if data_request_ID != self.m_last_request_ID:
+				errorhandler.loginfo("drop datarow with ID {}".format(data_request_ID))
+				return
+			rownumber = int(data_entry["row_number"])
+			if rownumber != 0:
+				errorhandler.loginfo("unexpected packet: asked for row 0 and received row {}".format(rownumber))
+
+			self.m_fingerprint = hash(rawdata[1:])
 
 		elif self.m_current_state is CurrentStates.WAITING_FOR_ROWS:
 
@@ -73,9 +83,9 @@ class HistoricalData:
 			self.m_row_count = int(row_count)
 			self.m_row_count_time = time.time()
 
-#  !l{version}{byte request ID}{dword row nr}{word count} in LSB first order = request entries from log file
 
 	def request_first_row(self):
+		#  !l{version}{byte request ID}{dword row nr}{word count} in LSB first order = request entries from log file
 		self.m_last_request_ID = (self.m_last_request_ID + 1) % 256
 		self.socket_datastream.sendto(b"!l" + self.protocol_version +
 									  self.m_last_request_ID.to_bytes(length=1, signed=False) +
@@ -115,7 +125,11 @@ class HistoricalData:
 
 	def find_missing():
 
-
+	def find_gaps_and_request(self):
+		"""
+		assumes that
+		:return:
+		"""
 
 
 	def is_chunk_full(startidx, endidxp1):
@@ -125,8 +139,8 @@ class HistoricalData:
 
 # basic algorithm is:
 # 1) find out how many entries in log file.
-# 2) find first timestamp in log file
-# 3) look up first_sequence_number for this timestamp
+# 2) get the first row of data and hash it (fingerprint)
+# 3) look up first_sequence_number for this fingerprint
 # 4) look for gaps in the database and request these in chunks.  Wait until chunk is fully received or timeout.
 # Gap looking algorithm:
 # count on where sequence number is a given range: if count is less than expected, narrow down by halves until the missing parts are identified or the incomplete chunk size is <= 100
@@ -142,7 +156,3 @@ class HistoricalData:
 # each row is a unique combination of first log file entry, i.e.
 # 1) timestamp
 # 2) sequence number corresponding to the first entry of this logfile
-
-
-
-
