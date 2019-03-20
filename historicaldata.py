@@ -53,9 +53,8 @@ class HistoricalData:
 			rownumber = int(data_entry["row_number"])
 			if rownumber != 0:
 				errorhandler.loginfo("unexpected packet: asked for row 0 and received row {}".format(rownumber))
-
 			self.m_fingerprint = hash(rawdata[1:])
-
+			self.find_gaps_and_request()
 		elif self.m_current_state is CurrentStates.WAITING_FOR_ROWS:
 
 
@@ -140,7 +139,7 @@ class HistoricalData:
 # basic algorithm is:
 # 1) find out how many entries in log file.
 # 2) get the first row of data and hash it (fingerprint)
-# 3) look up first_sequence_number for this fingerprint
+# 3) OPTIONAL - ? look up first_sequence_number for this fingerprint
 # 4) look for gaps in the database and request these in chunks.  Wait until chunk is fully received or timeout.
 # Gap looking algorithm:
 # count on where sequence number is a given range: if count is less than expected, narrow down by halves until the missing parts are identified or the incomplete chunk size is <= 100
@@ -148,11 +147,12 @@ class HistoricalData:
 # when data are incoming, insert into a RAM table first then chunk to the main database periodically?
 #
 # Store in database:
-# 1) A unique sequence number
-# 2) The log file index number
+# 1) A unique sequence number primary ID
+# 2a) the fingerprint for the current arduino logfile
+# 2b) The log file index number
 # 3) timestamp
 #
-# Keep in a second table:
+# Keep in a second table:  -OPTIONAL? NOT REQD?
 # each row is a unique combination of first log file entry, i.e.
 # 1) timestamp
 # 2) sequence number corresponding to the first entry of this logfile

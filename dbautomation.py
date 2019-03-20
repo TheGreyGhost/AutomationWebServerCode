@@ -8,7 +8,8 @@ import time
 
 class DBautomation:
     m_db = None
-    m_cursor = None   # named tuple cursor into the db which holds access information
+    m_cursor_fifo = None   # cursor for one-row-at-a-time addition
+    m_cursor_trans = None  # cursor for transaction-based row addition
     # m_fifo_mode = False
     # m_max_rows = 0
 
@@ -21,7 +22,7 @@ class DBautomation:
                                                 db=dbname,
                                                 use_pure=True) #use_pure=true to prevent bug https://bugs.mysql.com/bug.php?id=90585
 
-            self.m_cursor = self.m_db.cursor(buffered=True, named_tuple=True)
+            self.m_cursor_fifo = self.m_db.cursor(buffered=True, named_tuple=True)
                 #buffered=True to prevent mysql.connector.errors.InternalError: Unread result found.
         except mysql.connector.Error as err:
             errorhandler.logerror(err)
@@ -31,8 +32,8 @@ class DBautomation:
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         # make sure the objects get closed
-        if not self.m_cursor is None:
-            self.m_cursor.close()
+        if not self.m_cursor_fifo is None:
+            self.m_cursor_fifo.close()
         if not self.m_db is None:
             self.m_db.close()
 
@@ -45,6 +46,33 @@ class DBautomation:
     #     """
     #     self.m_fifo_mode = True
     #     self.m_max_rows = maxrows
+
+    def start_transaction(self, tablename):
+        """
+        Prepare for a transaction to add multiple rows
+        Can only have one transaction running at once.  If try, close the previous transaction and continue
+        :param tablename:
+        :return:
+        """
+        if not self.m_cursor_trans is None:
+            self.m_cursor_trans.close()
+            self.m_cursor_trans = None
+            errorhandler.logwarn("Tried to start a new transaction when the previous one was still open")
+
+        self.m_cursor_trans = self.m_db.cursor(buffered=True, named_tuple=True)
+        transSQL = "BEGIN TRANSACTION;"
+        errorhandler.logdebug("SQL: {}".format(transSQL))
+        self.m_cursor_trans.execute(transSQL)
+
+    def add_data_to_transaction(self, data):
+        if not in trsnsaction raise error
+
+    def end_transaction(self):
+        if not in trasnaction raise error
+        COMMIT;
+
+    def write_single_row_fifo(self, tablename, data, maxrows):
+
 
     def write_single_row_fifo(self, tablename, data, maxrows):
         """
@@ -74,17 +102,17 @@ class DBautomation:
             insertSQL = "INSERT INTO {tablename} ({fieldnames}) VALUES ({values});"\
                 .format(tablename=tablename, fieldnames=fieldnames, values=values)
             errorhandler.logdebug("INSERT:{}".format(insertSQL))
-            self.m_cursor.execute(insertSQL, datacopy)
+            self.m_cursor_fifo.execute(insertSQL, datacopy)
 
             findrowcountSQL = "SELECT entry_number FROM {tablename} "\
                     " ORDER BY entry_number DESC LIMIT {first_row_to_delete}, 1;"\
                     .format(tablename=tablename, first_row_to_delete=maxrows)
-            self.m_cursor.execute(findrowcountSQL)
-            youngest_row_to_delete = self.m_cursor.fetchone()
+            self.m_cursor_fifo.execute(findrowcountSQL)
+            youngest_row_to_delete = self.m_cursor_fifo.fetchone()
             if not youngest_row_to_delete is None:
                 deleteSQL = "DELETE FROM {tablename} WHERE entry_number <= {youngest_to_delete};"\
                             .format(tablename=tablename, youngest_to_delete=youngest_row_to_delete[0])
-                self.m_cursor.execute(deleteSQL)
+                self.m_cursor_fifo.execute(deleteSQL)
 
             self.m_db.commit()
 
