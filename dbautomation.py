@@ -7,23 +7,36 @@ import datetime
 import time
 
 class DBautomation:
-    m_db = None
+    m_db_fifo = None
+    m_db_trans = None
     m_cursor_fifo = None   # cursor for one-row-at-a-time addition
     m_cursor_trans = None  # cursor for transaction-based row addition
+    m_tablename_trans = None # table for the current transaction-based row additions
     # m_fifo_mode = False
     # m_max_rows = 0
 
     def __init__(self, username, dbpassword, host, port, dbname):
         try:
-            self.m_db = mysql.connector.connect(host=host,  # your host, usually localhost
-                                                port=port,
-                                                user=username,  # your username
-                                                passwd=dbpassword,  # your password
-                                                db=dbname,
-                                                use_pure=True) #use_pure=true to prevent bug https://bugs.mysql.com/bug.php?id=90585
+            self.m_db_fifo = mysql.connector.connect(host=host,  # your host, usually localhost
+                                                     port=port,
+                                                     user=username,  # your username
+                                                     passwd=dbpassword,  # your password
+                                                     db=dbname,
+                                                     use_pure=True) #use_pure=true to prevent bug https://bugs.mysql.com/bug.php?id=90585
+            self.m_db_fifo.autocommit = False
+            self.m_cursor_fifo = self.m_db_fifo.cursor(buffered=True, named_tuple=True)
+            #buffered=True to prevent mysql.connector.errors.InternalError: Unread result found.
 
-            self.m_cursor_fifo = self.m_db.cursor(buffered=True, named_tuple=True)
-                #buffered=True to prevent mysql.connector.errors.InternalError: Unread result found.
+            self.m_db_trans = mysql.connector.connect(host=host,  # your host, usually localhost
+                                                     port=port,
+                                                     user=username,  # your username
+                                                     passwd=dbpassword,  # your password
+                                                     db=dbname,
+                                                     use_pure=True) #use_pure=true to prevent bug https://bugs.mysql.com/bug.php?id=90585
+            self.m_db_trans.autocommit = False
+            self.m_cursor_trans = self.m_db_trans.cursor(buffered=True, named_tuple=True)
+            # buffered=True to prevent mysql.connector.errors.InternalError: Unread result found.
+
         except mysql.connector.Error as err:
             errorhandler.logerror(err)
 
@@ -32,11 +45,15 @@ class DBautomation:
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         # make sure the objects get closed
-        if not self.m_cursor_fifo is None:
+        if self.m_cursor_fifo is not None:
             self.m_cursor_fifo.close()
-        if not self.m_db is None:
-            self.m_db.close()
+        if self.m_db_fifo is not None:
+            self.m_db_fifo.close()
 
+        if self.m_cursor_trans is not None:
+            self.m_cursor_trans.close()
+        if self.m_db_trans is not None:
+            self.m_db_trans.close()
 
     # def set_fifo_mode(self, maxrows):
     #     """
@@ -50,29 +67,54 @@ class DBautomation:
     def start_transaction(self, tablename):
         """
         Prepare for a transaction to add multiple rows
-        Can only have one transaction running at once.  If try, close the previous transaction and continue
-        :param tablename:
+        Can only have one transaction running at once.
+        :param tablename: the table to insert rows into
         :return:
         """
-        if not self.m_cursor_trans is None:
+        if self.m_cursor_trans is not None:
             self.m_cursor_trans.close()
             self.m_cursor_trans = None
-            errorhandler.logwarn("Tried to start a new transaction when the previous one was still open")
+            self.m_db_trans.rollback()
+            errorhandler.logwarn("Tried to start a new transaction when the previous one was still open, rolled back")
 
-        self.m_cursor_trans = self.m_db.cursor(buffered=True, named_tuple=True)
-        transSQL = "BEGIN TRANSACTION;"
-        errorhandler.logdebug("SQL: {}".format(transSQL))
-        self.m_cursor_trans.execute(transSQL)
+        self.m_cursor_trans = self.m_db_trans.cursor(buffered=True, named_tuple=True)
+        self.m_tablename_trans = tablename
 
     def add_data_to_transaction(self, data):
-        if not in trsnsaction raise error
+        """
+        adds a single row of data to the currently-in-progress transaction
+        if row is already in the db, ignore
+        :param data: dictionary of row to add
+        :return:
+        """
+        if self.m_cursor_trans is None:
+            errorhandler.logwarn("Tried to add data to transaction which isn't open")
+        else:
+            try:
+                firstentry = True
+                for key, value in data.items():
+                    if firstentry:
+                        fieldnames = key
+                        values = "%(" + key + ")s"
+                        firstentry = False
+                    else:
+                        fieldnames = fieldnames + "," + key
+                        values = values + "," + "%(" + key + ")s"
+                insertSQL = "INSERT IGNORE INTO {tablename} ({fieldnames}) VALUES ({values});" \
+                    .format(tablename=self.m_tablename_trans, fieldnames=fieldnames, values=values)
+                errorhandler.logdebug("INSERT:{}".format(insertSQL))
+                self.m_cursor_trans.execute(insertSQL, data)
+
+            except mysql.connector.Error as err:
+                errorhandler.logdebug("Might be related to insertSQL which is:{}".format(insertSQL))
+                raise
 
     def end_transaction(self):
-        if not in trasnaction raise error
-        COMMIT;
-
-    def write_single_row_fifo(self, tablename, data, maxrows):
-
+        if self.m_cursor_trans is None:
+            errorhandler.logwarn("Tried to end transaction which isn't open")
+            return
+        self.m_cursor_trans.close()
+        self.m_db_trans.commit()
 
     def write_single_row_fifo(self, tablename, data, maxrows):
         """
@@ -114,7 +156,7 @@ class DBautomation:
                             .format(tablename=tablename, youngest_to_delete=youngest_row_to_delete[0])
                 self.m_cursor_fifo.execute(deleteSQL)
 
-            self.m_db.commit()
+            self.m_db_fifo.commit()
 
         except mysql.connector.Error as err:
             errorhandler.logdebug("Might be related to insertSQL which is:{}".format(insertSQL))

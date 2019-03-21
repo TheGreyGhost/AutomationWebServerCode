@@ -27,7 +27,7 @@ class HistoricalData:
 	REQUEST_ROWS_TIMEOUT = 30 # timeout if no rows received within this many seconds
 
 	def __init__(self, dbautomation):
-		m_dbautomation = dbautomation
+		self.m_dbautomation = dbautomation
 
 	def request_row_count(self):
 		"""
@@ -56,6 +56,10 @@ class HistoricalData:
 			self.m_fingerprint = hash(rawdata[1:])
 			self.find_gaps_and_request()
 		elif self.m_current_state is CurrentStates.WAITING_FOR_ROWS:
+			datacopy = data_entry.copy()
+			datacopy.pop("data_request_ID", None)
+			datacopy["datastore_hash"] = self.m_fingerprint
+			self.m_dbautomation.add_data_to_transaction(datacopy)
 
 
 	def received_cancel(self, dataSequenceID):
