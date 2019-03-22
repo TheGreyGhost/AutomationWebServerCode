@@ -12,12 +12,17 @@ CurrentStates = Enum("CurrentStates", "IDLE" "WAITING_FOR_ROWCOUNT" "WAITING_FOR
 
 
 class HistoricalData:
+	"""
+	Manages retrieval and storage of the historical data from the arduino
+	"""
 	m_dbautomation = None
 	m_last_request_ID = 0
 	m_current_state = CurrentStates["IDLE"]
 	m_last_action_time = time.time()
 	m_next_action_time = m_last_action_time
 	m_fingerprint = 0
+	m_configuration = None
+	m_tablename = None
 
 	m_row_count = 0			# the number of rows in the arduino's datastore
 	m_row_count_time = 0	# the time (unixtime) that the row count was last received
@@ -26,8 +31,10 @@ class HistoricalData:
 	WAIT_TIME_AFTER_TIMEOUT = 300 # wait this many seconds before trying again after a timeout
 	REQUEST_ROWS_TIMEOUT = 30 # timeout if no rows received within this many seconds
 
-	def __init__(self, dbautomation):
+	def __init__(self, dbautomation, configuration):
 		self.m_dbautomation = dbautomation
+		self.m_configuration = configuration
+		self.m_tablename = configuration.get("LogDataRow")["tablename"]
 
 	def request_row_count(self):
 		"""
@@ -119,8 +126,9 @@ class HistoricalData:
 			errorhandler.logdebug(str(te))
 			self.m_last_action_time = time.time()
 			self.m_next_action_time = self.m_last_action_time + self.WAIT_TIME_AFTER_TIMEOUT
+			if self.m_current_state == CurrentStates.WAITING_FOR_ROWS:
+				self.m_dbautomation.end_transaction()
 			self.m_current_state = CurrentStates.IDLE
-
 
 		head_index = 0
 		tail_index = logfile_length
@@ -134,10 +142,23 @@ class HistoricalData:
 		:return:
 		"""
 
+		self.m_dbautomation.start_transaction(self.m_tablename)
 
-	def is_chunk_full(startidx, endidxp1):
-		# checks the database for the chunk from startidx (inclusive) to endidxp1 (exclusive)
-		# returns true if chunk is fully populated
+
+	def is_chunk_full(self, startidx, endidxp1):
+		"""
+		checks the database for the chunk from startidx (inclusive) to endidxp1 (exclusive)
+		returns true if chunk is fully populated
+		:param startidx:  the index of the first row to check
+		:param endidxp1: one past the last row index to check
+		:return:
+		"""
+		countSQL = "COUNT(*) FROM '{}' WHERE 'row_number' BETWEEN {} AND {} AND 'datastore_hash' = {};".format(self.m_tablename, startidx, endidxp1 - 1, self.m_fingerprint)
+		result = self.m_dbautomation.execute_select(countSQL)
+		errorhandler.logdebug("query {} gave result {}".format(countSQL, result))
+		if int(result) < endidxp1 - startidx:
+			return False
+		return True
 
 
 # basic algorithm is:

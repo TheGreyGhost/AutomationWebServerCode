@@ -116,6 +116,16 @@ class DBautomation:
         self.m_cursor_trans.close()
         self.m_db_trans.commit()
 
+    def execute_select(self, selectSQL):
+        """
+        execute the given select statement
+        :return: results of the query
+        """
+        cursor = self.m_db_fifo.cursor(buffered=True, named_tuple=True)
+        result = cursor.execute(selectSQL)
+        cursor.close()
+        return result
+
     def write_single_row_fifo(self, tablename, data, maxrows):
         """
         writes the given data into the database; overwrites the existing row
