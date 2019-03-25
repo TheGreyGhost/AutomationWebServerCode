@@ -154,7 +154,7 @@ class HistoricalData:
 		:return:
 		"""
 		countSQL = "COUNT(*) FROM '{}' WHERE 'row_number' BETWEEN {} AND {} AND 'datastore_hash' = {};".format(self.m_tablename, startidx, endidxp1 - 1, self.m_fingerprint)
-		result = self.m_dbautomation.execute_select(countSQL)
+		result = self.m_dbautomation.execute_select_fifo(countSQL)
 		errorhandler.logdebug("query {} gave result {}".format(countSQL, result))
 		if int(result) < endidxp1 - startidx:
 			return False

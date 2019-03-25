@@ -10,4 +10,119 @@ log says timeout waiting for reply
 - tried nc -u -l 53201 and nc -u 192.168.2.35 53201 however no response.  No flashing lights on Arduino.
 Unplugged cat5 cable between Arduino and RPi.  Comms recommenced at next attempt (2 min later).  !d shows no problems
 
+22 Mar 2019
+Arduino stopped responding to queries about 14:10 noticed at 15:19
+arduino IDE was still active
+!s and !d gave normal:
+solar intensity:231.05
+cumulative insolation:4409610.00
+surge tank level:OK
+pump state:OFF(>SETPT)[1]
+cumulative pump runtime (s):17828.33
+last sampled pool temperature (C):30.06 at 2019/03/22 15:20:37 UTC+10:30
+Version:1.3
+Last Assert Error:0
+errorCountBusFailure:0
+HX_HOT_INLET
+  errorCountNotFound:0
+  errorCountCRCFailure:0
+  errorCountImplausibleValue:0
+    errorLastImplausibleValue:0 0.00
+HX_HOT_OUTLET
+  errorCountNotFound:0
+  errorCountCRCFailure:0
+  errorCountImplausibleValue:0
+    errorLastImplausibleValue:0 0.00
+HX_COLD_INLET
+  errorCountNotFound:0
+  errorCountCRCFailure:0
+  errorCountImplausibleValue:0
+    errorLastImplausibleValue:0 0.00
+HX_COLD_OUTLET
+  errorCountNotFound:0
+  errorCountCRCFailure:0
+  errorCountImplausibleValue:0
+    errorLastImplausibleValue:0 0.00
+AMBIENT
+  errorCountNotFound:0
+  errorCountCRCFailure:0
+  errorCountImplausibleValue:0
+    errorLastImplausibleValue:0 0.00
+real time clock is running:1
+timezone (s):37800
+real time clock synchronisation status:synchronised
+real time clock synchronisation mismatch (seconds ahead of true time):0
+log file status:OK
+Ethernet status:OK
+solar intensity sensor status:OK with lastInvalidReading:0
+number of DataStream errors:0
+with last error code: 0 subcode 0
+Bottom of stack minus top of heap:3744
+----------------------
+NO ERRORS IN THE MAIN LOG.
+TEMP LOG:
+
+2019-03-22 14:21:22.480 - automationwebserver.temp - DEBUG - INSERT:INSERT INTO PoolHeaterStatus (assert_failure_code,realtime_clock_status,logfile_status,ethernet_status,solar_intensity_reading_invalid,pump_state,hx_hot_inlet_status,hx_hot_outlet_status,hx_cold_inlet_status,hx_cold_outlet_status,ambient_status,timezoneseconds,timesyncstatus,timemismatchRTCsecondsahead,timestamp) VALUES (%(assert_failure_code)s,%(realtime_clock_status)s,%(logfile_status)s,%(ethernet_status)s,%(solar_intensity_reading_invalid)s,%(pump_state)s,%(hx_hot_inlet_status)s,%(hx_hot_outlet_status)s,%(hx_cold_inlet_status)s,%(hx_cold_outlet_status)s,%(ambient_status)s,%(timezoneseconds)s,%(timesyncstatus)s,%(timemismatchRTCsecondsahead)s,%(timestamp)s);
+2019-03-22 14:21:22.489 - automationwebserver.temp - DEBUG - got reply
+2019-03-22 14:21:41.508 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 14:22:41.566 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 14:23:41.622 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 14:24:41.683 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 14:25:41.742 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 14:26:41.801 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 14:27:41.858 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 14:28:41.911 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 14:29:41.966 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 14:30:42.019 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 14:31:42.085 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 14:32:42.147 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 14:33:42.210 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 14:34:42.269 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 14:35:42.332 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 14:36:42.388 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 14:37:42.448 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 14:38:42.508 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 14:39:42.573 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 14:40:42.638 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 14:41:42.692 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 14:42:42.751 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 14:43:42.807 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 14:44:42.859 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 14:45:42.918 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 14:46:42.977 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 14:47:43.037 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 14:48:43.103 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 14:49:43.152 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 14:50:43.207 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 14:51:43.267 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 14:52:43.325 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 14:53:43.381 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 14:54:43.444 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 14:55:43.507 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 14:56:43.566 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 14:57:43.629 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 14:58:43.693 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 14:59:43.755 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 15:00:43.812 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 15:01:43.877 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 15:02:43.935 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 15:03:43.996 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 15:04:44.056 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 15:05:44.113 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 15:06:44.168 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 15:07:44.221 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 15:08:44.281 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 15:09:44.345 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 15:10:44.401 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 15:11:44.458 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 15:12:44.525 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 15:13:44.585 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 15:14:44.644 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 15:15:44.700 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 15:16:44.762 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 15:17:44.820 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 15:18:44.878 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 15:19:44.938 - automationwebserver.temp - DEBUG - timeout waiting for reply
+2019-03-22 15:20:45.004 - automationwebserver.temp - DEBUG - timeout waiting for reply
+
 

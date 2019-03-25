@@ -7,8 +7,9 @@ import datetime
 import time
 
 class DBautomation:
-    m_db_fifo = None
-    m_db_trans = None
+    m_cnx_fifo = None
+    m_cnx_trans = None
+    m_cnx_select = None
     m_cursor_fifo = None   # cursor for one-row-at-a-time addition
     m_cursor_trans = None  # cursor for transaction-based row addition
     m_tablename_trans = None # table for the current transaction-based row additions
@@ -17,25 +18,32 @@ class DBautomation:
 
     def __init__(self, username, dbpassword, host, port, dbname):
         try:
-            self.m_db_fifo = mysql.connector.connect(host=host,  # your host, usually localhost
-                                                     port=port,
-                                                     user=username,  # your username
-                                                     passwd=dbpassword,  # your password
-                                                     db=dbname,
-                                                     use_pure=True) #use_pure=true to prevent bug https://bugs.mysql.com/bug.php?id=90585
-            self.m_db_fifo.autocommit = False
-            self.m_cursor_fifo = self.m_db_fifo.cursor(buffered=True, named_tuple=True)
+            self.m_cnx_fifo = mysql.connector.connect(host=host,  # your host, usually localhost
+                                                      port=port,
+                                                      user=username,  # your username
+                                                      passwd=dbpassword,  # your password
+                                                      db=dbname,
+                                                      use_pure=True) #use_pure=true to prevent bug https://bugs.mysql.com/bug.php?id=90585
+            self.m_cnx_fifo.autocommit = False
+            self.m_cursor_fifo = self.m_cnx_fifo.cursor(buffered=True, named_tuple=True)
             #buffered=True to prevent mysql.connector.errors.InternalError: Unread result found.
 
-            self.m_db_trans = mysql.connector.connect(host=host,  # your host, usually localhost
-                                                     port=port,
-                                                     user=username,  # your username
-                                                     passwd=dbpassword,  # your password
-                                                     db=dbname,
-                                                     use_pure=True) #use_pure=true to prevent bug https://bugs.mysql.com/bug.php?id=90585
-            self.m_db_trans.autocommit = False
-            self.m_cursor_trans = self.m_db_trans.cursor(buffered=True, named_tuple=True)
+            self.m_cnx_trans = mysql.connector.connect(host=host,  # your host, usually localhost
+                                                       port=port,
+                                                       user=username,  # your username
+                                                       passwd=dbpassword,  # your password
+                                                       db=dbname,
+                                                       use_pure=True) #use_pure=true to prevent bug https://bugs.mysql.com/bug.php?id=90585
+            self.m_cnx_trans.autocommit = False
+            self.m_cursor_trans = self.m_cnx_trans.cursor(buffered=True, named_tuple=True)
             # buffered=True to prevent mysql.connector.errors.InternalError: Unread result found.
+
+            self.m_cnx_select = mysql.connector.connect(host=host,  # your host, usually localhost
+                                                        port=port,
+                                                        user=username,  # your username
+                                                        passwd=dbpassword,  # your password
+                                                        db=dbname,
+                                                        use_pure=True) #use_pure=true to prevent bug https://bugs.mysql.com/bug.php?id=90585
 
         except mysql.connector.Error as err:
             errorhandler.logerror(err)
@@ -47,13 +55,13 @@ class DBautomation:
         # make sure the objects get closed
         if self.m_cursor_fifo is not None:
             self.m_cursor_fifo.close()
-        if self.m_db_fifo is not None:
-            self.m_db_fifo.close()
+        if self.m_cnx_fifo is not None:
+            self.m_cnx_fifo.close()
 
         if self.m_cursor_trans is not None:
             self.m_cursor_trans.close()
-        if self.m_db_trans is not None:
-            self.m_db_trans.close()
+        if self.m_cnx_trans is not None:
+            self.m_cnx_trans.close()
 
     # def set_fifo_mode(self, maxrows):
     #     """
@@ -74,10 +82,10 @@ class DBautomation:
         if self.m_cursor_trans is not None:
             self.m_cursor_trans.close()
             self.m_cursor_trans = None
-            self.m_db_trans.rollback()
+            self.m_cnx_trans.rollback()
             errorhandler.logwarn("Tried to start a new transaction when the previous one was still open, rolled back")
 
-        self.m_cursor_trans = self.m_db_trans.cursor(buffered=True, named_tuple=True)
+        self.m_cursor_trans = self.m_cnx_trans.cursor(buffered=True, named_tuple=True)
         self.m_tablename_trans = tablename
 
     def add_data_to_transaction(self, data):
@@ -114,14 +122,14 @@ class DBautomation:
             errorhandler.logwarn("Tried to end transaction which isn't open")
             return
         self.m_cursor_trans.close()
-        self.m_db_trans.commit()
+        self.m_cnx_trans.commit()
 
-    def execute_select(self, selectSQL):
+    def execute_select_fifo(self, selectSQL):
         """
         execute the given select statement
         :return: results of the query
         """
-        cursor = self.m_db_fifo.cursor(buffered=True, named_tuple=True)
+        cursor = self.m_cnx_fifo.cursor(buffered=True, named_tuple=True)
         result = cursor.execute(selectSQL)
         cursor.close()
         return result
@@ -166,11 +174,33 @@ class DBautomation:
                             .format(tablename=tablename, youngest_to_delete=youngest_row_to_delete[0])
                 self.m_cursor_fifo.execute(deleteSQL)
 
-            self.m_db_fifo.commit()
+            self.m_cnx_fifo.commit()
 
         except mysql.connector.Error as err:
             errorhandler.logdebug("Might be related to insertSQL which is:{}".format(insertSQL))
             raise
+
+
+    def count_rows(self, tablename, fingerprint, start_row_idx, number_of_rows):
+        """
+        return the number of rows in the database with
+        :param fingerprint: the arduino datastore fingerprint we're filling
+        :param start_row_idx: row index of the first row to count
+        :param number_of_rows: max # of rows to count
+        :return: the number of rows between start_row_idx and start_row_idx + number_of_rows which are actually in the db
+        """
+
+
+        with self.m_cnx_select.cursor(buffered=True, named_tuple=True) as cursor:
+            countSQL = "SELECT COUNT(*) FROM {tablename} WHERE datastore_hash = {hash}" \
+                       "AND row_number BETWEEN {startrow} and {endrow};"\
+                       .format(tablename=tablename, hash=fingerprint,
+                               startrow=start_row_idx, endrow=start_row_idx + number_of_rows - 1)
+            cursor.execute(countSQL)
+            rowcount = cursor.fetchone()
+
+            return rowcount[0]
+
 
 #     def log_common(self, tablename, logfield, entries, timestart, timefinish):
 #         if self.db is None or self.cursor is None:
