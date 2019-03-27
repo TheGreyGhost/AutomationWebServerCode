@@ -5,14 +5,11 @@ class DatabaseFill:
     always starts from the beginning of the dataset and fills upwards
 
     """
-
     m_dbautomation = None
     m_tablename = None
     m_rowcount = 0
     m_filled_up_to_p1 = 0
     m_fingerprint = 0
-
-
     MAX_CHUNK_SIZE = 10000
 
     def __init__(self, dbautomation, tablename):
@@ -22,7 +19,7 @@ class DatabaseFill:
     def update_rowcount_and_fingerprint(self, new_rowcount, fingerprint):
         self.m_rowcount = new_rowcount
         if fingerprint == self.m_fingerprint:
-            if self.m_rowcount < self.m_filled_up_to_p1:
+            if self.m_filled_up_to_p1 > self.m_rowcount:
                 self.m_filled_up_to_p1 = self.m_rowcount
         else:
             self.m_filled_up_to_p1 = 0
@@ -43,7 +40,7 @@ class DatabaseFill:
         """
         queries the database to find which rows are missing
         looks chunk_size rows at a time
-        :param min_chunk_size:
+        :param chunk_size: load this many rows at once
         :return:
         """
 
@@ -51,11 +48,12 @@ class DatabaseFill:
         if chunk_size < 1 or chunk_size > self.MAX_CHUNK_SIZE:
             raise ValueError("unexpected chunk size {}".format(chunk_size))
 
-        while (self.m_filled_up_to_p1 < self.m_rowcount):
+        while self.m_filled_up_to_p1 < self.m_rowcount:
             rows_to_count = self.m_rowcount - self.m_filled_up_to_p1
             rows_to_count = min(rows_to_count, chunk_size)
 
-            row_count = self.m_dbautomation.count_rows(self.m_tablename, self.m_fingerprint, self.m_filled_up_to_p1, rows_to_count)
+            row_count = self.m_dbautomation.count_rows(self.m_tablename, self.m_fingerprint,
+                                                       self.m_filled_up_to_p1, rows_to_count)
             if row_count < rows_to_count:
                 break
 

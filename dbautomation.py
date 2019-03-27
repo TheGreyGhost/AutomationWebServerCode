@@ -1,9 +1,5 @@
-# contains all the functions for interacting with the firewall database
 import mysql.connector
-from mysql.connector import errorcode
 import errorhandler
-from errorhandler import DatabaseError
-import datetime
 import time
 
 class DBautomation:
@@ -13,8 +9,6 @@ class DBautomation:
     m_cursor_fifo = None   # cursor for one-row-at-a-time addition
     m_cursor_trans = None  # cursor for transaction-based row addition
     m_tablename_trans = None # table for the current transaction-based row additions
-    # m_fifo_mode = False
-    # m_max_rows = 0
 
     def __init__(self, username, dbpassword, host, port, dbname):
         try:
@@ -62,15 +56,6 @@ class DBautomation:
             self.m_cursor_trans.close()
         if self.m_cnx_trans is not None:
             self.m_cnx_trans.close()
-
-    # def set_fifo_mode(self, maxrows):
-    #     """
-    #     turn on First In First Out with specified max number of rows; old rows are deleted as new are inserted
-    #     :param maxrows: the max number of rows to retain
-    #     :return: none
-    #     """
-    #     self.m_fifo_mode = True
-    #     self.m_max_rows = maxrows
 
     def start_transaction(self, tablename):
         """
@@ -180,7 +165,6 @@ class DBautomation:
             errorhandler.logdebug("Might be related to insertSQL which is:{}".format(insertSQL))
             raise
 
-
     def count_rows(self, tablename, fingerprint, start_row_idx, number_of_rows):
         """
         return the number of rows in the database with
@@ -190,10 +174,9 @@ class DBautomation:
         :return: the number of rows between start_row_idx and start_row_idx + number_of_rows which are actually in the db
         """
 
-
         with self.m_cnx_select.cursor(buffered=True, named_tuple=True) as cursor:
             countSQL = "SELECT COUNT(*) FROM {tablename} WHERE datastore_hash = {hash}" \
-                       "AND row_number BETWEEN {startrow} and {endrow};"\
+                       " AND row_number BETWEEN {startrow} AND {endrow};"\
                        .format(tablename=tablename, hash=fingerprint,
                                startrow=start_row_idx, endrow=start_row_idx + number_of_rows - 1)
             cursor.execute(countSQL)
