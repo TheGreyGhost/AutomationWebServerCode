@@ -23,7 +23,7 @@ class DatabaseFill:
                 self.m_filled_up_to_p1 = self.m_rowcount
         else:
             self.m_filled_up_to_p1 = 0
-
+        self.m_fingerprint = fingerprint
 
     def get_next_missing_rows(self, chunk_size):
         """
@@ -56,4 +56,4 @@ class DatabaseFill:
                                                        self.m_filled_up_to_p1, rows_to_count)
             if row_count < rows_to_count:
                 break
-
+            self.m_filled_up_to_p1 += rows_to_count

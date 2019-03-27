@@ -174,16 +174,20 @@ class DBautomation:
         :return: the number of rows between start_row_idx and start_row_idx + number_of_rows which are actually in the db
         """
 
-        with self.m_cnx_select.cursor(buffered=True, named_tuple=True) as cursor:
-            countSQL = "SELECT COUNT(*) FROM {tablename} WHERE datastore_hash = {hash}" \
+        cursor = None
+        try:
+            cursor = self.m_cnx_select.cursor(buffered=True, named_tuple=True)
+            countSQL = "SELECT COUNT(*) AS rowsfound FROM {tablename} WHERE datastore_hash = {hash}" \
                        " AND row_number BETWEEN {startrow} AND {endrow};"\
                        .format(tablename=tablename, hash=fingerprint,
                                startrow=start_row_idx, endrow=start_row_idx + number_of_rows - 1)
             cursor.execute(countSQL)
-            rowcount = cursor.fetchone()
+            row_count = cursor.fetchone()
+            return row_count[0]
 
-            return rowcount[0]
-
+        finally:
+            if cursor is not None:
+                cursor.close
 
 #     def log_common(self, tablename, logfield, entries, timestart, timefinish):
 #         if self.db is None or self.cursor is None:
