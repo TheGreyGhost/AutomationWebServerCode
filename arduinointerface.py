@@ -10,6 +10,43 @@ import truetime
 
 MAX_EXPECTED_MSG_SIZE = 1024
 
+
+class ArduinoMessager:
+    """
+    sends message to the Arduino
+    """
+
+    m_socket = None
+    m_ip_port_arduino = None
+    m_protocol_version = "A"
+
+    def __init__(self, ip_rpi, port_rpi, ip_arduino, port_arduino, protocol_version):
+        self.m_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.m_socket.bind((ip_rpi, port_rpi))
+        self.m_ip_port_arduino = (ip_arduino, port_arduino)
+        self.m_protocol_version = protocol_version
+
+    def synchronise_time(self, time_and_zone):
+        msg = b"!t" + self.m_protocol_version \
+              + int(time_and_zone.time).to_bytes(length=4, byteorder="little", signed=False) \
+              + int(time_and_zone.timezone).to_bytes(length=4, byteorder="little", signed=True)
+        self.m_socket.sendto(msg, self.m_ip_port_arduino)
+
+    def request_realtime_info(self):
+        self.m_socket.sendto(b"!r" + self.m_protocol_version, self.m_ip_port_arduino)
+        self.m_socket.sendto(b"!s" + self.m_protocol_version, self.m_ip_port_arduino)
+
+    def request_row_count(self, protocol_version):
+        self.m_socket.sendto(b"!n" + protocol_version, self.m_ip_port_arduino)
+
+    def request_rows(self, first_row_idx, row_count, request_ID):
+        self.m_socket.sendto(b"!l" + self.m_protocol_version +
+                             request_ID.to_bytes(length=1, signed=False) +
+                             first_row_idx.to_bytes(length=4, signed=False) +
+                             row_count.to_bytes(length=2, signed=False),
+                             self.m_ip_port_arduino)
+
+
 class Arduino:
     """
         Communicates with the arduino to retrieve data and send commands
@@ -74,6 +111,7 @@ Each response is a single UDP packet only.
 
 
     """
+    m_messager_datastream = None
 
     socket_terminal = None
     socket_datastream = None
@@ -91,6 +129,9 @@ Each response is a single UDP packet only.
 
     def __init__(self, i_configuration):
         self.configuration = i_configuration
+
+        self.protocol_version = bytes(i_configuration.get["DataTransfer"]["ProtocolVersion"][0], 'utf-8')
+
         arduinolink = i_configuration.get["ArduinoLink"]
         ip_rpi = arduinolink["RPiIPAddress"]
         port_rpi_terminal= arduinolink.getint("RPiTerminalPort")
@@ -100,11 +141,13 @@ Each response is a single UDP packet only.
         port_arduino_terminal= arduinolink.getint("ArdTerminalPort")
         port_arduino_datastream = arduinolink.getint("ArdDatastreamPort")
 
-        self.socket_datastream = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.socket_datastream.bind((ip_rpi, port_rpi_datastream))
-        self.ip_port_arduino_datastream = (ip_arduino, port_arduino_datastream)
+        self.m_messager_datastream = ArduinoMessager(ip_rpi, port_rpi_datastream,
+                                                     ip_arduino, port_arduino_datastream,
+                                                     self.protocol_version)
 
-        self.protocol_version = bytes(i_configuration.get["DataTransfer"]["ProtocolVersion"][0], 'utf-8')
+        # self.socket_datastream = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        # self.socket_datastream.bind((ip_rpi, port_rpi_datastream))
+        # self.ip_port_arduino_datastream = (ip_arduino, port_arduino_datastream)
 
         database_info = i_configuration.get["Databases"]
         realtime_info = i_configuration.get["REALTIME"]
@@ -136,8 +179,9 @@ Each response is a single UDP packet only.
            Asks the arduino to send the current status information and sensor information.  Doesn't wait for a reply.
         :return:
         """
-        self.socket_datastream.sendto(b"!r" + self.protocol_version, self.ip_port_arduino_datastream)
-        self.socket_datastream.sendto(b"!s" + self.protocol_version, self.ip_port_arduino_datastream)
+        self.m_messager_datastream.request_realtime_info()
+        # self.socket_datastream.sendto(b"!r" + self.protocol_version, self.ip_port_arduino_datastream)
+        # self.socket_datastream.sendto(b"!s" + self.protocol_version, self.ip_port_arduino_datastream)
 
     def synchronise_time(self):
         """
@@ -146,10 +190,11 @@ Each response is a single UDP packet only.
         """
         try:
             time_and_zone = self.true_time.get_true_time()
-            msg = b"!t" + self.protocol_version \
-                  + int(time_and_zone.time).to_bytes(length=4, byteorder="little", signed=False) \
-                  + int(time_and_zone.timezone).to_bytes(length=4, byteorder="little", signed=True)
-            self.socket_datastream.sendto(msg, self.ip_port_arduino_datastream)
+            self.m_messager_datastream.synchronise_time(time_and_zone)
+            # msg = b"!t" + self.protocol_version \
+            #       + int(time_and_zone.time).to_bytes(length=4, byteorder="little", signed=False) \
+            #       + int(time_and_zone.timezone).to_bytes(length=4, byteorder="little", signed=True)
+            # self.socket_datastream.sendto(msg, self.ip_port_arduino_datastream)
         except truetime.TimeServerError as e:
             return False
 

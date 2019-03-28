@@ -7,9 +7,10 @@ import subprocess
 from collections import namedtuple
 from enum import Enum
 import time
+from databasefill import DatabaseFill
+from arduinointerface import ArduinoMessager
 
 CurrentStates = Enum("CurrentStates", "IDLE" "WAITING_FOR_ROWCOUNT" "WAITING_FOR_FIRST_ROW" "WAITING_FOR_ROWS")
-
 
 class HistoricalData:
 	"""
@@ -23,6 +24,9 @@ class HistoricalData:
 	m_fingerprint = 0
 	m_configuration = None
 	m_tablename = None
+	m_databasefill = None
+	m_messager = None
+	m_protocol_version = "A"
 
 	m_row_count = 0			# the number of rows in the arduino's datastore
 	m_row_count_time = 0	# the time (unixtime) that the row count was last received
@@ -30,18 +34,25 @@ class HistoricalData:
 	REQUEST_ROW_COUNT_TIMEOUT = 30 # timeout after this many seconds of a row count request
 	WAIT_TIME_AFTER_TIMEOUT = 300 # wait this many seconds before trying again after a timeout
 	REQUEST_ROWS_TIMEOUT = 30 # timeout if no rows received within this many seconds
+	WAIT_TIME_AFTER_UP_TO_DATE = 60 # how long to wait for re-poll once all rows have been fetched
 
-	def __init__(self, dbautomation, configuration):
+	ROW_FETCH_CHUNK_SIZE = 100 # fetch this many rows of data at once
+
+	def __init__(self, dbautomation, configuration, messager):
 		self.m_dbautomation = dbautomation
 		self.m_configuration = configuration
 		self.m_tablename = configuration.get("LogDataRow")["tablename"]
+		self.m_databasefill = DatabaseFill(dbautomation, self.m_tablename)
+		self.m_messager = messager
+		self.m_protocol_version = bytes(configuration.get["DataTransfer"]["ProtocolVersion"][0], 'utf-8')
 
 	def request_row_count(self):
 		"""
 		Ask the arduino for the current number of rows in the data store
 		:return:
 		"""
-		self.socket_datastream.sendto(b"!l" + self.protocol_version, self.ip_port_arduino_datastream)
+		self.m_messager.request_row_count()
+		# self.socket_datastream.sendto(b"!l" + self.protocol_version, self.ip_port_arduino_datastream)
 		self.m_last_action_time = time.time()
 		self.m_next_action_time = self.m_last_action_time + self.REQUEST_ROW_COUNT_TIMEOUT
 		self.m_current_state = CurrentStates.WAITING_FOR_ROWCOUNT
@@ -52,11 +63,11 @@ class HistoricalData:
 		:param data_entry: named tuple of the row data
 		:return:
 		"""
+		data_request_ID = int(data_entry["data_request_ID"])
+		if data_request_ID != self.m_last_request_ID:
+			errorhandler.loginfo("drop datarow with ID {}".format(data_request_ID))
+			return
 		if self.m_current_state is CurrentStates.WAITING_FOR_FIRST_ROW:
-			data_request_ID = int(data_entry["data_request_ID"])
-			if data_request_ID != self.m_last_request_ID:
-				errorhandler.loginfo("drop datarow with ID {}".format(data_request_ID))
-				return
 			rownumber = int(data_entry["row_number"])
 			if rownumber != 0:
 				errorhandler.loginfo("unexpected packet: asked for row 0 and received row {}".format(rownumber))
@@ -82,6 +93,10 @@ class HistoricalData:
 		:param dataSequenceID: the ID of the row data request sent
 		:return:
 		"""
+		if dataSequenceID != self.m_last_request_ID:
+			return
+
+		self.find_gaps_and_request()
 
 	def received_rowcount(self, row_count):
 		"""
@@ -92,14 +107,13 @@ class HistoricalData:
 		if self.m_current_state is CurrentStates.WAITING_FOR_ROWCOUNT:
 			self.m_row_count = int(row_count)
 			self.m_row_count_time = time.time()
+			self.request_fingerprint()
 
-
-	def request_first_row(self):
+	def request_fingerprint(self):
 		#  !l{version}{byte request ID}{dword row nr}{word count} in LSB first order = request entries from log file
 		self.m_last_request_ID = (self.m_last_request_ID + 1) % 256
-		self.socket_datastream.sendto(b"!l" + self.protocol_version +
-									  self.m_last_request_ID.to_bytes(length=1, signed=False) +
-									  b"\x00\x00\x00\x00\x01\x00", self.ip_port_arduino_datastream)
+		self.m_messager.request_rows(0, 1, self.m_last_request_ID)
+
 		self.m_last_action_time = time.time()
 		self.m_next_action_time = self.m_last_action_time + self.REQUEST_ROWS_TIMEOUT
 		self.m_current_state = CurrentStates.WAITING_FOR_FIRST_ROW
@@ -130,54 +144,56 @@ class HistoricalData:
 				self.m_dbautomation.end_transaction()
 			self.m_current_state = CurrentStates.IDLE
 
-		head_index = 0
-		tail_index = logfile_length
-
-
-	def find_missing():
 
 	def find_gaps_and_request(self):
 		"""
-		assumes that
+		looks for gaps in the database and issues a request for the next rows to fill the gap
 		:return:
 		"""
+		self.m_databasefill.update_rowcount_and_fingerprint(self.m_row_count, self.m_fingerprint)
+		range_to_fetch = self.m_databasefill.get_next_missing_rows(self.ROW_FETCH_CHUNK_SIZE)
+		if range_to_fetch[0] >= range_to_fetch[1]: # nothing to fetch.  return to IDLE.
+			self.m_current_state = CurrentStates["IDLE"]
+			self.m_last_action_time = time.time()
+			self.m_next_action_time = self.m_last_action_time + self.WAIT_TIME_AFTER_UP_TO_DATE
+			return
 
-		self.m_dbautomation.start_transaction(self.m_tablename)
+		#  !l{version}{byte request ID}{dword row nr}{word count} in LSB first order = request entries from log file
+		self.m_last_request_ID = (self.m_last_request_ID + 1) % 256
+		self.m_messager.request_rows(range_to_fetch[0], range_to_fetch[1] - range_to_fetch[0], self.m_last_request_ID)
+		# self.socket_datastream.sendto(b"!l" + self.protocol_version +
+		# 							  self.m_last_request_ID.to_bytes(length=1, signed=False) +
+		# 							  range_to_fetch[0].to_bytes(length=4, signed=False) +
+		# 							  (range_to_fetch[1] - range_to_fetch[0]).to_bytes(length=2, signed=False),
+		# 							  self.ip_port_arduino_datastream)
+		self.m_last_action_time = time.time()
+		self.m_next_action_time = self.m_last_action_time + self.REQUEST_ROWS_TIMEOUT
+		self.m_current_state = CurrentStates.WAITING_FOR_FIRST_ROW
 
-
-	def is_chunk_full(self, startidx, endidxp1):
-		"""
-		checks the database for the chunk from startidx (inclusive) to endidxp1 (exclusive)
-		returns true if chunk is fully populated
-		:param startidx:  the index of the first row to check
-		:param endidxp1: one past the last row index to check
-		:return:
-		"""
-		countSQL = "COUNT(*) FROM '{}' WHERE 'row_number' BETWEEN {} AND {} AND 'datastore_hash' = {};".format(self.m_tablename, startidx, endidxp1 - 1, self.m_fingerprint)
-		result = self.m_dbautomation.execute_select_fifo(countSQL)
-		errorhandler.logdebug("query {} gave result {}".format(countSQL, result))
-		if int(result) < endidxp1 - startidx:
-			return False
-		return True
+	#
+	# def is_chunk_full(self, startidx, endidxp1):
+	# 	"""
+	# 	checks the database for the chunk from startidx (inclusive) to endidxp1 (exclusive)
+	# 	returns true if chunk is fully populated
+	# 	:param startidx:  the index of the first row to check
+	# 	:param endidxp1: one past the last row index to check
+	# 	:return:
+	# 	"""
+	# 	countSQL = "COUNT(*) FROM '{}' WHERE 'row_number' BETWEEN {} AND {} AND 'datastore_hash' = {};".format(self.m_tablename, startidx, endidxp1 - 1, self.m_fingerprint)
+	# 	result = self.m_dbautomation.execute_select_fifo(countSQL)
+	# 	errorhandler.logdebug("query {} gave result {}".format(countSQL, result))
+	# 	if int(result) < endidxp1 - startidx:
+	# 		return False
+	# 	return True
 
 
 # basic algorithm is:
 # 1) find out how many entries in log file.
 # 2) get the first row of data and hash it (fingerprint)
-# 3) OPTIONAL - ? look up first_sequence_number for this fingerprint
-# 4) look for gaps in the database and request these in chunks.  Wait until chunk is fully received or timeout.
-# Gap looking algorithm:
-# count on where sequence number is a given range: if count is less than expected, narrow down by halves until the missing parts are identified or the incomplete chunk size is <= 100
-# 5) once swept through them in order, wait a short time then repeat the algorithm
-# when data are incoming, insert into a RAM table first then chunk to the main database periodically?
+# 3) look for gaps in the database and request these in chunks.  Wait until chunk is fully received or timeout.
 #
 # Store in database:
-# 1) A unique sequence number primary ID
-# 2a) the fingerprint for the current arduino logfile
-# 2b) The log file index number
+# 1) the fingerprint for the current arduino logfile
+# 2) the log file index number for the current arduino logfile.  (1) and (2) combined form a primary key
 # 3) timestamp
 #
-# Keep in a second table:  -OPTIONAL? NOT REQD?
-# each row is a unique combination of first log file entry, i.e.
-# 1) timestamp
-# 2) sequence number corresponding to the first entry of this logfile
