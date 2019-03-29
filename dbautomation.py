@@ -189,6 +189,17 @@ class DBautomation:
             if cursor is not None:
                 cursor.close
 
+    def clear_all_rows(self, tablename):
+        cursor = None
+        try:
+            cursor = self.m_cnx_select.cursor(buffered=True, named_tuple=True)
+            sql = "TRUNCATE TABLE {tablename};".format(tablename=tablename)
+            cursor.execute(sql)
+
+        finally:
+            if cursor is not None:
+                cursor.close
+
 #     def log_common(self, tablename, logfield, entries, timestart, timefinish):
 #         if self.db is None or self.cursor is None:
 #             raise DatabaseError("Not connected to a database")

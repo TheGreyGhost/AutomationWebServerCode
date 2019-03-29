@@ -9,6 +9,7 @@ from enum import Enum
 import time
 from databasefill import DatabaseFill
 from arduinointerface import ArduinoMessager
+from currenttime import current_time
 
 CurrentStates = Enum("CurrentStates", "IDLE" "WAITING_FOR_ROWCOUNT" "WAITING_FOR_FIRST_ROW" "WAITING_FOR_ROWS")
 
@@ -17,19 +18,21 @@ class HistoricalData:
 	Manages retrieval and storage of the historical data from the arduino
 	"""
 	m_dbautomation = None
-	m_last_request_ID = 0
 	m_current_state = CurrentStates["IDLE"]
-	m_last_action_time = time.time()
+	m_last_action_time = current_time()
 	m_next_action_time = m_last_action_time
 	m_fingerprint = 0
 	m_configuration = None
 	m_tablename = None
 	m_databasefill = None
 	m_messager = None
-	m_protocol_version = "A"
+	m_protocol_version = "A" #dummy
 
 	m_row_count = 0			# the number of rows in the arduino's datastore
 	m_row_count_time = 0	# the time (unixtime) that the row count was last received
+	m_last_request_ID = 0
+	m_rows_requested = 0
+	m_rows_received = 0
 
 	REQUEST_ROW_COUNT_TIMEOUT = 30 # timeout after this many seconds of a row count request
 	WAIT_TIME_AFTER_TIMEOUT = 300 # wait this many seconds before trying again after a timeout
@@ -46,6 +49,13 @@ class HistoricalData:
 		self.m_messager = messager
 		self.m_protocol_version = bytes(configuration.get["DataTransfer"]["ProtocolVersion"][0], 'utf-8')
 
+		hcfg = configuration["HISTORY"]
+		self.REQUEST_ROW_COUNT_TIMEOUT = hcfg.getint("REQUEST_ROW_COUNT_TIMEOUT", fallback=self.REQUEST_ROW_COUNT_TIMEOUT)
+		self.WAIT_TIME_AFTER_TIMEOUT = hcfg.getint("WAIT_TIME_AFTER_TIMEOUT", fallback=self.WAIT_TIME_AFTER_TIMEOUT)
+		self.REQUEST_ROWS_TIMEOUT = hcfg.getint("REQUEST_ROWS_TIMEOUT", fallback=self.REQUEST_ROWS_TIMEOUT)
+		self.WAIT_TIME_AFTER_UP_TO_DATE = hcfg.getint("WAIT_TIME_AFTER_UP_TO_DATE", fallback=self.WAIT_TIME_AFTER_UP_TO_DATE)
+		self.ROW_FETCH_CHUNK_SIZE = hcfg.getint("ROW_FETCH_CHUNK_SIZE", fallback=self.ROW_FETCH_CHUNK_SIZE)
+
 	def request_row_count(self):
 		"""
 		Ask the arduino for the current number of rows in the data store
@@ -53,7 +63,7 @@ class HistoricalData:
 		"""
 		self.m_messager.request_row_count()
 		# self.socket_datastream.sendto(b"!l" + self.protocol_version, self.ip_port_arduino_datastream)
-		self.m_last_action_time = time.time()
+		self.m_last_action_time = current_time()
 		self.m_next_action_time = self.m_last_action_time + self.REQUEST_ROW_COUNT_TIMEOUT
 		self.m_current_state = CurrentStates.WAITING_FOR_ROWCOUNT
 
@@ -74,11 +84,11 @@ class HistoricalData:
 			self.m_fingerprint = hash(rawdata[1:])
 			self.find_gaps_and_request()
 		elif self.m_current_state is CurrentStates.WAITING_FOR_ROWS:
+			self.m_rows_received += 1
 			datacopy = data_entry.copy()
 			datacopy.pop("data_request_ID", None)
 			datacopy["datastore_hash"] = self.m_fingerprint
 			self.m_dbautomation.add_data_to_transaction(datacopy)
-
 
 	def received_cancel(self, dataSequenceID):
 		"""
@@ -86,6 +96,9 @@ class HistoricalData:
 		:param dataSequenceID: the ID of the row data request sent
         :return:
         """
+		if dataSequenceID != self.m_last_request_ID:
+			return
+		errorhandler.loginfo("cancel received for ID {}".format(dataSequenceID))
 
 	def received_end_of_data(self, dataSequenceID):
 		"""
@@ -96,7 +109,12 @@ class HistoricalData:
 		if dataSequenceID != self.m_last_request_ID:
 			return
 
-		self.find_gaps_and_request()
+		if self.m_rows_received == self.m_rows_requested:
+			self.find_gaps_and_request()
+		else:
+			errorhandler.loginfo("received_end_of_data for dataSequenceID {} when m_rows_received was {}"
+								" but expected m_rows_requested {}"
+								.format(dataSequenceID, self.m_rows_received, self.m_rows_requested))
 
 	def received_rowcount(self, row_count):
 		"""
@@ -106,21 +124,27 @@ class HistoricalData:
 		"""
 		if self.m_current_state is CurrentStates.WAITING_FOR_ROWCOUNT:
 			self.m_row_count = int(row_count)
-			self.m_row_count_time = time.time()
+			self.m_row_count_time = current_time()
 			self.request_fingerprint()
 
 	def request_fingerprint(self):
 		#  !l{version}{byte request ID}{dword row nr}{word count} in LSB first order = request entries from log file
+		if self.m_row_count == 0:
+			self.m_current_state = CurrentStates["IDLE"]
+			self.m_last_action_time = current_time()
+			self.m_next_action_time = self.m_last_action_time + self.WAIT_TIME_AFTER_UP_TO_DATE
+			return
+
 		self.m_last_request_ID = (self.m_last_request_ID + 1) % 256
 		self.m_messager.request_rows(0, 1, self.m_last_request_ID)
 
-		self.m_last_action_time = time.time()
+		self.m_last_action_time = current_time()
 		self.m_next_action_time = self.m_last_action_time + self.REQUEST_ROWS_TIMEOUT
 		self.m_current_state = CurrentStates.WAITING_FOR_FIRST_ROW
 
 	def tick(self):
 		try:
-			timed_out = time.time() >= self.next_action_time
+			timed_out = current_time() >= self.next_action_time
 			if self.m_current_state is CurrentStates.IDLE:
 				if timed_out:
 					self.request_row_count()
@@ -138,12 +162,11 @@ class HistoricalData:
 
 		except TimeoutError as te:
 			errorhandler.logdebug(str(te))
-			self.m_last_action_time = time.time()
+			self.m_last_action_time = current_time()
 			self.m_next_action_time = self.m_last_action_time + self.WAIT_TIME_AFTER_TIMEOUT
 			if self.m_current_state == CurrentStates.WAITING_FOR_ROWS:
 				self.m_dbautomation.end_transaction()
 			self.m_current_state = CurrentStates.IDLE
-
 
 	def find_gaps_and_request(self):
 		"""
@@ -152,9 +175,9 @@ class HistoricalData:
 		"""
 		self.m_databasefill.update_rowcount_and_fingerprint(self.m_row_count, self.m_fingerprint)
 		range_to_fetch = self.m_databasefill.get_next_missing_rows(self.ROW_FETCH_CHUNK_SIZE)
-		if range_to_fetch[0] >= range_to_fetch[1]: # nothing to fetch.  return to IDLE.
+		if range_to_fetch[0] >= range_to_fetch[1]:  # nothing to fetch.  return to IDLE.
 			self.m_current_state = CurrentStates["IDLE"]
-			self.m_last_action_time = time.time()
+			self.m_last_action_time = current_time()
 			self.m_next_action_time = self.m_last_action_time + self.WAIT_TIME_AFTER_UP_TO_DATE
 			return
 
@@ -166,7 +189,7 @@ class HistoricalData:
 		# 							  range_to_fetch[0].to_bytes(length=4, signed=False) +
 		# 							  (range_to_fetch[1] - range_to_fetch[0]).to_bytes(length=2, signed=False),
 		# 							  self.ip_port_arduino_datastream)
-		self.m_last_action_time = time.time()
+		self.m_last_action_time = current_time()
 		self.m_next_action_time = self.m_last_action_time + self.REQUEST_ROWS_TIMEOUT
 		self.m_current_state = CurrentStates.WAITING_FOR_FIRST_ROW
 
