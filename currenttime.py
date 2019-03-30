@@ -9,8 +9,12 @@ def current_time():
     :return: the current time (unixtime)
     """
     global ct_time_debug
+    global ct_simulated_time
+
     if not ct_time_debug:
         return time.time()
+    else:
+        return ct_simulated_time
 
 def simulate_time(newtime):
     """

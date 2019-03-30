@@ -96,10 +96,12 @@ def hd_debug(db_history, configuration):
      """
     hd_messager = HD_Messager
 
+    simulate_time(50)
+
     hd = HistoricalData(db_history, configuration, hd_messager)
     db_history.clear_all_rows("LoggedDataDebug2")
 
-    simulate_time(50)
+    simulate_time(55)
     hd.tick()  # stay in IDLE
     simulate_time(150)
     hd.tick() # advance to row count request; expect to get request_row_count
@@ -202,8 +204,6 @@ def hd_debug(db_history, configuration):
     hd.tick()
     simulate_time(1100)
     hd.tick()               #expect timeout on waiting for rows
-
-
 
 
 if __name__ == '__main__':

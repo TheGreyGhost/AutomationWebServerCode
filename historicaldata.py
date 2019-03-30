@@ -1,17 +1,9 @@
-import socket
-import struct
-import time
 import errorhandler
-import select
-import subprocess
-from collections import namedtuple
 from enum import Enum
-import time
 from databasefill import DatabaseFill
-from arduinointerface import ArduinoMessager
 from currenttime import current_time
 
-CurrentStates = Enum("CurrentStates", "IDLE" "WAITING_FOR_ROWCOUNT" "WAITING_FOR_FIRST_ROW" "WAITING_FOR_ROWS")
+CurrentStates = Enum("CurrentStates", "IDLE WAITING_FOR_ROWCOUNT WAITING_FOR_FIRST_ROW WAITING_FOR_ROWS")
 
 class HistoricalData:
 	"""
@@ -44,12 +36,12 @@ class HistoricalData:
 	def __init__(self, dbautomation, configuration, messager):
 		self.m_dbautomation = dbautomation
 		self.m_configuration = configuration
-		self.m_tablename = configuration.get("LogDataRow")["tablename"]
+		self.m_tablename = configuration.get["LogDataRow"]["tablename"]
 		self.m_databasefill = DatabaseFill(dbautomation, self.m_tablename)
 		self.m_messager = messager
 		self.m_protocol_version = bytes(configuration.get["DataTransfer"]["ProtocolVersion"][0], 'utf-8')
 
-		hcfg = configuration["HISTORY"]
+		hcfg = configuration.get["HISTORY"]
 		self.REQUEST_ROW_COUNT_TIMEOUT = hcfg.getint("REQUEST_ROW_COUNT_TIMEOUT", fallback=self.REQUEST_ROW_COUNT_TIMEOUT)
 		self.WAIT_TIME_AFTER_TIMEOUT = hcfg.getint("WAIT_TIME_AFTER_TIMEOUT", fallback=self.WAIT_TIME_AFTER_TIMEOUT)
 		self.REQUEST_ROWS_TIMEOUT = hcfg.getint("REQUEST_ROWS_TIMEOUT", fallback=self.REQUEST_ROWS_TIMEOUT)
@@ -144,7 +136,7 @@ class HistoricalData:
 
 	def tick(self):
 		try:
-			timed_out = current_time() >= self.next_action_time
+			timed_out = current_time() >= self.m_next_action_time
 			if self.m_current_state is CurrentStates.IDLE:
 				if timed_out:
 					self.request_row_count()
