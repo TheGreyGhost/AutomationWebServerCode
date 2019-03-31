@@ -94,20 +94,20 @@ def hd_debug(db_history, configuration):
         7) refill to 20 rows with the new fingerprint
         8) test timeouts for each of the stages
      """
-    hd_messager = HD_Messager
+    hd_messager = HD_Messager()
 
     simulate_time(50)
 
     hd = HistoricalData(db_history, configuration, hd_messager)
     db_history.clear_all_rows("LoggedDataDebug2")
 
-    simulate_time(55)
-    hd.tick()  # stay in IDLE
     simulate_time(150)
     hd.tick() # advance to row count request; expect to get request_row_count
     hd.tick() # nothing happens
     hd.received_rowcount(0) #zero rows, return to IDLE
     hd.tick() # should be idle now
+    simulate_time(155)
+    hd.tick()  # stay in IDLE
 
     DebugRec = namedtuple('DebugRecord', ['data_request_ID', 'row_number', 'timestamp_UTC'])
 
@@ -116,7 +116,8 @@ def hd_debug(db_history, configuration):
     hd.received_rowcount(10)
     hd.tick()           # expect fingerprint request
     id = hd_messager.last_request_ID
-    hd.received_data(DebugRec(id, 0, 50))  # return first row info
+    FINGERPRINT_1 = b"\x00\x01\x02\x03\x04"
+    hd.received_data(DebugRec(id, 0, 50), FINGERPRINT_1)  # return first row info
     hd.received_end_of_data(id)
     hd.tick()
     simulate_time(1005)
@@ -136,7 +137,7 @@ def hd_debug(db_history, configuration):
     hd.received_rowcount(15)
     hd.tick()           # expect fingerprint request
     id = hd_messager.last_request_ID
-    hd.received_data(DebugRec(id, 0, 50))  # return first row info
+    hd.received_data(DebugRec(id, 0, 50), FINGERPRINT_1)  # return first row info
     hd.received_end_of_data(id)
     hd.tick()
     simulate_time(1020)
@@ -148,7 +149,7 @@ def hd_debug(db_history, configuration):
         i2 = hd_messager.last_request_rows_count
         id = hd_messager.last_request_ID
         for j in range(i1, i1+i2-1):
-            hd.received_data(DebugRec(id, j, j+50))
+            hd.received_data(DebugRec(id, j, j+50), FINGERPRINT_2)
             hd.received_end_of_data(id)
         hd.tick()
 
@@ -158,7 +159,8 @@ def hd_debug(db_history, configuration):
     hd.received_rowcount(20)
     hd.tick()           # expect fingerprint request
     id = hd_messager.last_request_ID
-    hd.received_data(DebugRec(id, 0, 1050))  # return first row info
+    FINGERPRINT_2 = b"\x10\x21\x32\x43\x54"
+    hd.received_data(DebugRec(id, 0, 1050), FINGERPRINT_2)  # return first row info
     hd.received_end_of_data(id)
     hd.tick()
 
@@ -168,7 +170,7 @@ def hd_debug(db_history, configuration):
         i2 = hd_messager.last_request_rows_count
         id = hd_messager.last_request_ID
         for j in range(i1, i1+i2-1):
-            hd.received_data(DebugRec(id, j, j+1050))
+            hd.received_data(DebugRec(id, j, j+1050), FINGERPRINT_2)
             hd.received_end_of_data(id)
         hd.tick()
 

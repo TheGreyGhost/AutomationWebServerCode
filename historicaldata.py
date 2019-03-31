@@ -5,6 +5,7 @@ from currenttime import current_time
 
 CurrentStates = Enum("CurrentStates", "IDLE WAITING_FOR_ROWCOUNT WAITING_FOR_FIRST_ROW WAITING_FOR_ROWS")
 
+
 class HistoricalData:
 	"""
 	Manages retrieval and storage of the historical data from the arduino
@@ -48,12 +49,15 @@ class HistoricalData:
 		self.WAIT_TIME_AFTER_UP_TO_DATE = hcfg.getint("WAIT_TIME_AFTER_UP_TO_DATE", fallback=self.WAIT_TIME_AFTER_UP_TO_DATE)
 		self.ROW_FETCH_CHUNK_SIZE = hcfg.getint("ROW_FETCH_CHUNK_SIZE", fallback=self.ROW_FETCH_CHUNK_SIZE)
 
+		self.m_last_action_time = current_time()
+		self.m_next_action_time = self.m_last_action_time
+
 	def request_row_count(self):
 		"""
 		Ask the arduino for the current number of rows in the data store
 		:return:
 		"""
-		self.m_messager.request_row_count()
+		self.m_messager.request_row_count(self.m_protocol_version)
 		# self.socket_datastream.sendto(b"!l" + self.protocol_version, self.ip_port_arduino_datastream)
 		self.m_last_action_time = current_time()
 		self.m_next_action_time = self.m_last_action_time + self.REQUEST_ROW_COUNT_TIMEOUT
@@ -65,12 +69,12 @@ class HistoricalData:
 		:param data_entry: named tuple of the row data
 		:return:
 		"""
-		data_request_ID = int(data_entry["data_request_ID"])
+		data_request_ID = int(data_entry.data_request_ID)
 		if data_request_ID != self.m_last_request_ID:
 			errorhandler.loginfo("drop datarow with ID {}".format(data_request_ID))
 			return
 		if self.m_current_state is CurrentStates.WAITING_FOR_FIRST_ROW:
-			rownumber = int(data_entry["row_number"])
+			rownumber = int(data_entry.row_number)
 			if rownumber != 0:
 				errorhandler.loginfo("unexpected packet: asked for row 0 and received row {}".format(rownumber))
 			self.m_fingerprint = hash(rawdata[1:])
@@ -79,7 +83,7 @@ class HistoricalData:
 			self.m_rows_received += 1
 			datacopy = data_entry.copy()
 			datacopy.pop("data_request_ID", None)
-			datacopy["datastore_hash"] = self.m_fingerprint
+			datacopy.datastore_hash = self.m_fingerprint
 			self.m_dbautomation.add_data_to_transaction(datacopy)
 
 	def received_cancel(self, dataSequenceID):
