@@ -81,9 +81,9 @@ class HistoricalData:
 			self.find_gaps_and_request()
 		elif self.m_current_state is CurrentStates.WAITING_FOR_ROWS:
 			self.m_rows_received += 1
-			datacopy = data_entry.copy()
+			datacopy = data_entry._asdict()
 			datacopy.pop("data_request_ID", None)
-			datacopy.datastore_hash = self.m_fingerprint
+			datacopy["datastore_hash"] = self.m_fingerprint
 			self.m_dbautomation.add_data_to_transaction(datacopy)
 
 	def received_cancel(self, dataSequenceID):
@@ -104,13 +104,16 @@ class HistoricalData:
 		"""
 		if dataSequenceID != self.m_last_request_ID:
 			return
-
+		self.m_dbautomation.end_transaction()
 		if self.m_rows_received == self.m_rows_requested:
 			self.find_gaps_and_request()
 		else:
 			errorhandler.loginfo("received_end_of_data for dataSequenceID {} when m_rows_received was {}"
 								" but expected m_rows_requested {}"
 								.format(dataSequenceID, self.m_rows_received, self.m_rows_requested))
+			self.m_current_state = CurrentStates["IDLE"]
+			self.m_last_action_time = current_time()
+			self.m_next_action_time = self.m_last_action_time + self.WAIT_TIME_AFTER_UP_TO_DATE
 
 	def received_rowcount(self, row_count):
 		"""
@@ -179,7 +182,9 @@ class HistoricalData:
 
 		#  !l{version}{byte request ID}{dword row nr}{word count} in LSB first order = request entries from log file
 		self.m_last_request_ID = (self.m_last_request_ID + 1) % 256
-		self.m_messager.request_rows(range_to_fetch[0], range_to_fetch[1] - range_to_fetch[0], self.m_last_request_ID)
+		self.m_rows_requested = range_to_fetch[1] - range_to_fetch[0]
+		self.m_messager.request_rows(range_to_fetch[0], self.m_rows_requested, self.m_last_request_ID)
+
 		# self.socket_datastream.sendto(b"!l" + self.protocol_version +
 		# 							  self.m_last_request_ID.to_bytes(length=1, signed=False) +
 		# 							  range_to_fetch[0].to_bytes(length=4, signed=False) +
@@ -187,7 +192,9 @@ class HistoricalData:
 		# 							  self.ip_port_arduino_datastream)
 		self.m_last_action_time = current_time()
 		self.m_next_action_time = self.m_last_action_time + self.REQUEST_ROWS_TIMEOUT
-		self.m_current_state = CurrentStates.WAITING_FOR_FIRST_ROW
+		self.m_current_state = CurrentStates.WAITING_FOR_ROWS
+		self.m_dbautomation.start_transaction(self.m_tablename)
+
 
 	#
 	# def is_chunk_full(self, startidx, endidxp1):

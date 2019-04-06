@@ -109,7 +109,7 @@ def hd_debug(db_history, configuration):
     simulate_time(155)
     hd.tick()  # stay in IDLE
 
-    DebugRec = namedtuple('DebugRecord', ['data_request_ID', 'row_number', 'timestamp_UTC'])
+    DebugRec = namedtuple('DebugRecord', ['data_request_ID', 'row_number', 'timestampUTC'])
 
     simulate_time(1000)
     hd.tick()           # expect request_row_count
@@ -117,20 +117,20 @@ def hd_debug(db_history, configuration):
     hd.tick()           # expect fingerprint request
     id = hd_messager.last_request_ID
     FINGERPRINT_1 = b"\x00\x01\x02\x03\x04"
-    hd.received_data(DebugRec(id, 0, 50), FINGERPRINT_1)  # return first row info
-    hd.received_end_of_data(id)
+    hd.received_data(DebugRec(id, 0, 50), FINGERPRINT_1)  # return first row info, advance to WAITING_FOR_ROWS
+    hd.received_end_of_data(id)                           # end of rows for zero row request should be ignored
     hd.tick()
     simulate_time(1005)
-    hd.tick()
+    hd.tick()                                              #don't time out
 
     # fill table up until end, keep requesting even when full
     for i in range(0, 6):
         i1 = hd_messager.last_request_rows_idx
         i2 = hd_messager.last_request_rows_count
         id = hd_messager.last_request_ID
-        for j in range(i1, i1+i2-1):
-            hd.received_data(DebugRec(id, j, j+50))
-            hd.received_end_of_data(id)
+        for j in range(i1, i1+i2):
+            hd.received_data(DebugRec(id, j, j+50), b"dummy")
+        hd.received_end_of_data(id)
         hd.tick()
 
     # increase row_count to 15 and go again
