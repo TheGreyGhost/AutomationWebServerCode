@@ -2,6 +2,7 @@ import errorhandler
 from enum import Enum
 from databasefill import DatabaseFill
 from currenttime import current_time
+import binascii
 
 CurrentStates = Enum("CurrentStates", "IDLE WAITING_FOR_ROWCOUNT WAITING_FOR_FIRST_ROW WAITING_FOR_ROWS")
 
@@ -77,7 +78,7 @@ class HistoricalData:
 			rownumber = int(data_entry.row_number)
 			if rownumber != 0:
 				errorhandler.loginfo("unexpected packet: asked for row 0 and received row {}".format(rownumber))
-			self.m_fingerprint = hash(rawdata[1:])
+			self.m_fingerprint = binascii.crc32(rawdata[1:])
 			self.find_gaps_and_request()
 		elif self.m_current_state is CurrentStates.WAITING_FOR_ROWS:
 			self.m_rows_received += 1
