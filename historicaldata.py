@@ -184,6 +184,7 @@ class HistoricalData:
 		#  !l{version}{byte request ID}{dword row nr}{word count} in LSB first order = request entries from log file
 		self.m_last_request_ID = (self.m_last_request_ID + 1) % 256
 		self.m_rows_requested = range_to_fetch[1] - range_to_fetch[0]
+		self.m_rows_received = 0
 		self.m_messager.request_rows(range_to_fetch[0], self.m_rows_requested, self.m_last_request_ID)
 
 		# self.socket_datastream.sendto(b"!l" + self.protocol_version +

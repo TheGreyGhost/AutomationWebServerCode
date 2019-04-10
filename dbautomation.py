@@ -177,6 +177,7 @@ class DBautomation:
         cursor = None
         try:
             cursor = self.m_cnx_select.cursor(buffered=True, named_tuple=True)
+            cursor.execute("SET SESSION TRANSACTION ISOLATION LEVEL READ UNCOMMITTED")
             countSQL = "SELECT COUNT(*) AS rowsfound FROM {tablename} WHERE datastore_hash = {hash}" \
                        " AND row_number BETWEEN {startrow} AND {endrow};"\
                        .format(tablename=tablename, hash=fingerprint,
