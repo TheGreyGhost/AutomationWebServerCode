@@ -134,23 +134,25 @@ def hd_debug(db_history, configuration):
         hd.tick()
 
     # increase row_count to 15 and go again
+    simulate_time(2000)
+    hd.tick()
     hd.received_rowcount(15)
     hd.tick()           # expect fingerprint request
     id = hd_messager.last_request_ID
     hd.received_data(DebugRec(id, 0, 50), FINGERPRINT_1)  # return first row info
     hd.received_end_of_data(id)
     hd.tick()
-    simulate_time(1020)
-    hd.tick()
+#    simulate_time(2020)
+#    hd.tick()
 
     # fill table up until end, keep requesting even when full
     for i in range(0, 6):
         i1 = hd_messager.last_request_rows_idx
         i2 = hd_messager.last_request_rows_count
         id = hd_messager.last_request_ID
-        for j in range(i1, i1+i2-1):
-            hd.received_data(DebugRec(id, j, j+50), FINGERPRINT_2)
-            hd.received_end_of_data(id)
+        for j in range(i1, i1+i2):
+            hd.received_data(DebugRec(id, j, j+50), b"dummy")
+        hd.received_end_of_data(id)
         hd.tick()
 
     # new database; count = 0 and different hash
@@ -169,42 +171,37 @@ def hd_debug(db_history, configuration):
         i1 = hd_messager.last_request_rows_idx
         i2 = hd_messager.last_request_rows_count
         id = hd_messager.last_request_ID
-        for j in range(i1, i1+i2-1):
-            hd.received_data(DebugRec(id, j, j+1050), FINGERPRINT_2)
-            hd.received_end_of_data(id)
+        for j in range(i1, i1+i2):
+            hd.received_data(DebugRec(id, j, j+1050), b"dummy")
+        hd.received_end_of_data(id)
         hd.tick()
 
     #timeout on row count
-    simulate_time(0)
-    hd.tick()       # in idle
-    simulate_time(1000)
+    simulate_time(11000)    #should now be in idle
     hd.tick()
-    simulate_time(1005)
+    simulate_time(11005)
     hd.tick()
-    simulate_time(1100)
+    simulate_time(11100)
     hd.tick()               #expect timeout on rowcount
 
-    simulate_time(0)
+    simulate_time(21000)
     hd.tick()       # in idle
-    simulate_time(1000)
-    hd.tick()
     hd.received_rowcount(20)
-    simulate_time(1005)
+    simulate_time(21005)
     hd.tick()
-    simulate_time(1100)
+    simulate_time(21100)
     hd.tick()               #expect timeout on fingerprint
 
-    simulate_time(0)
-    hd.tick()       # in idle
-    simulate_time(1000)
+    # in idle
+    simulate_time(31000)
     hd.tick()
     hd.received_rowcount(20)
-    hd.received_data(DebugRec(id, 0, 1050))  # return first row info
+    hd.received_data(DebugRec(id, 0, 1050), FINGERPRINT_2)  # return first row info
     hd.received_end_of_data(id)
     hd.tick()
-    simulate_time(1005)
+    simulate_time(31005)
     hd.tick()
-    simulate_time(1100)
+    simulate_time(31100)
     hd.tick()               #expect timeout on waiting for rows
 
 
