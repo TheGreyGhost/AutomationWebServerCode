@@ -6,6 +6,8 @@ import arduinointerface
 import time
 import logging
 import mysql.connector
+from dbautomation import DBautomation
+from historicaldata import HistoricalData
 
 def poll_arduino_loop():
 
@@ -28,7 +30,16 @@ def poll_arduino_loop():
     last_time_sync_time = time.time()
     next_time_sync_time = last_time_sync_time
 
+    database_info = configuration.get["Databases"]
+    history_info = configuration.get["HISTORY"]
+    db_history = DBautomation(history_info["user"], history_info["password"], database_info["HostAddress"],
+                              database_info.getint("HostPort"), history_info["databasename"]
+                              )
+    hd = HistoricalData(db_history, configuration, arduino)
+
     while True:
+        hd.tick()
+
         if time.time() >= next_request_time:
             try:
                 arduino.request_realtime_info()
