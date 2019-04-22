@@ -1,13 +1,16 @@
 import argparse
-import errorhandler
-import configuration
-from configuration import Configuration
-import arduinointerface
-import time
 import logging
+import time
+
 import mysql.connector
+
+import arduinointerface
+import configuration
+import errorhandler
+from configuration import Configuration
 from dbautomation import DBautomation
 from historicaldata import HistoricalData
+
 
 def poll_arduino_loop():
 
@@ -21,7 +24,7 @@ def poll_arduino_loop():
     WAIT_TIME_IO_ERROR = 60  # seconds to pause if we get an IO error
     WAIT_TIME_MSG_ERROR = 60  # seconds to pause if we get an incorrect message
     POLL_TIME = 10  # number of seconds to wait before sending another request
-    MAX_SERIOUS_ERRORS = 3 # max # of serious errors (eg database connection lost) before exit.
+    MAX_SERIOUS_ERRORS = 3  # max # of serious errors (eg database connection lost) before exit.
     TIME_SYNC_TIME = 24 * 60 * 60  # number of seconds to wait before sending another time sync message
 
     last_request_time = time.time()
@@ -86,7 +89,7 @@ def poll_arduino_loop():
             # don't wait for a reply, our main polling loop will get it on the next time through
 
         time.sleep(1)
-    return
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
