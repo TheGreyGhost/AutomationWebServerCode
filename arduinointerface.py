@@ -50,7 +50,7 @@ class ArduinoMessager:
 class Arduino:
     """
         Communicates with the arduino to retrieve data and send commands
-
+r
         The Arduino says:
         IPAddress IP_LOCAL(192, 168, 2, 35);
         IPAddress IP_REMOTE(192, 168, 2, 34);
