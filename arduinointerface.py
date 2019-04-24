@@ -283,16 +283,16 @@ Each response is a single UDP packet only.
             # self.parse_message("ParameterInformation", data[3:-1])
         elif data[1:2] == b"l":
             msg = self.parse_message("LogfileCancel", data[3:-1])
-            self.m_historicaldata.received_cancel(msg.data_request_ID)
+            self.m_historicaldata.received_cancel(msg["data_request_ID"])
         elif data[1:2] == b"c":
             msg = self.parse_message("LogfileComplete", data[3:-1])
-            self.m_historicaldata.received_end_of_data(msg.data_request_ID)
+            self.m_historicaldata.received_end_of_data(msg["data_request_ID"])
         elif data[1:2] == b"d":
             msg = self.parse_message("LogfileEntry", data[3:-1])
             self.m_historicaldata.received_data(msg, data[3:-1])
         elif data[1:2] == b"n":
             msg = self.parse_message("NumberOfLogfileEntries", data[3:-1])
-            self.m_historicaldata.received_rowcount(msg.number_of_logfile_entries)
+            self.m_historicaldata.received_rowcount(msg["data_request_ID"])
         else:
             raise errorhandler.ArduinoMessageError("invalid response command letter: {}".format(hex(data[1])))
 
