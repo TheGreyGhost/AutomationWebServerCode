@@ -7,6 +7,7 @@ from dbautomation import DBautomation
 import math
 import truetime
 from historicaldata import HistoricalData
+import debugdefines
 
 MAX_EXPECTED_MSG_SIZE = 1024
 
@@ -243,10 +244,12 @@ Each response is a single UDP packet only.
             structinfo = self.configuration.get[structname]
             message_struct = namedtuple(structname, structinfo["fieldnames"])
             message = message_struct._make(struct.unpack(structinfo["unpackformat"], data))
-            errorhandler.logdebug("unpacked message:{}".format(repr(message)))
+            if debugdefines.rawmessages:
+                errorhandler.logdebug("unpacked message:{}".format(repr(message)))
             clean_message = message._asdict()
             self.replace_nan_with_none(clean_message)
-            errorhandler.logdebug("cleaned message:{}".format(repr(clean_message)))
+            if debugdefines.rawmessages:
+                errorhandler.logdebug("cleaned message:{}".format(repr(clean_message)))
             return clean_message
         except struct.error as e:
             raise errorhandler.ArduinoMessageError("invalid msg for {}:{}".format(structname, str(e)))
@@ -313,7 +316,8 @@ Each response is a single UDP packet only.
             if data is None:
                 return got_at_least_one
             got_at_least_one = True
-            errorhandler.logdebug("msg received:{}".format(data.hex()))
+            if debugdefines.rawmessages:
+                errorhandler.logdebug("msg received:{}".format(data.hex()))
             self.parse_incoming_message(data)
         return got_at_least_one
 

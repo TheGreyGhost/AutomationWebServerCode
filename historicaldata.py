@@ -3,6 +3,7 @@ from enum import Enum
 from databasefill import DatabaseFill
 from currenttime import current_time
 import binascii
+import debugdefines
 
 CurrentStates = Enum("CurrentStates", "IDLE WAITING_FOR_ROWCOUNT WAITING_FOR_FIRST_ROW WAITING_FOR_ROWS")
 
@@ -60,6 +61,8 @@ class HistoricalData:
         Ask the arduino for the current number of rows in the data store
         :return:
         """
+        if debugdefines.historicaldata:
+            errorhandler.logdebug("request_row_count")
         self.m_messager.request_row_count(self.m_protocol_version)
         # self.socket_datastream.sendto(b"!l" + self.protocol_version, self.ip_port_arduino_datastream)
         self.m_last_action_time = current_time()
@@ -74,6 +77,9 @@ class HistoricalData:
         :return:
         """
         data_request_ID = int(data_entry["data_request_ID"])
+        if debugdefines.historicaldata:
+            errorhandler.logdebug("received_data ID:{} row_number:{}".format(data_request_ID, data_entry["row_number"]))
+
         if data_request_ID != self.m_last_request_ID:
             errorhandler.loginfo("drop datarow with ID {}".format(data_request_ID))
             return
@@ -96,6 +102,8 @@ class HistoricalData:
         :param dataSequenceID: the ID of the row data request sent
         :return:
         """
+        if debugdefines.historicaldata:
+            errorhandler.logdebug("received_cancel ID:{}".format(dataSequenceID))
         if dataSequenceID != self.m_last_request_ID:
             return
         errorhandler.loginfo("cancel received for ID {}".format(dataSequenceID))
@@ -106,6 +114,8 @@ class HistoricalData:
         :param dataSequenceID: the ID of the row data request sent
         :return:
         """
+        if debugdefines.historicaldata:
+            errorhandler.logdebug("received_end_of_data ID:{}".format(dataSequenceID))
         if dataSequenceID != self.m_last_request_ID:
             return
         self.m_dbautomation.end_transaction()
@@ -125,6 +135,8 @@ class HistoricalData:
         :param row_count: the number of rows
         :return:
         """
+        if debugdefines.historicaldata:
+            errorhandler.logdebug("received_rowcount:{}", row_count)
         if self.m_current_state is CurrentStates.WAITING_FOR_ROWCOUNT:
             self.m_row_count = int(row_count)
             self.m_row_count_time = current_time()
