@@ -136,7 +136,7 @@ class HistoricalData:
         :return:
         """
         if debugdefines.historicaldata:
-            errorhandler.logdebug("received_rowcount:{}", row_count)
+            errorhandler.logdebug("received_rowcount:{}".format(row_count))
         if self.m_current_state is CurrentStates.WAITING_FOR_ROWCOUNT:
             self.m_row_count = int(row_count)
             self.m_row_count_time = current_time()
@@ -152,6 +152,8 @@ class HistoricalData:
 
         self.m_last_request_ID = (self.m_last_request_ID + 1) % 256
         self.m_messager.request_rows(0, 1, self.m_last_request_ID)
+        if debugdefines.historicaldata:
+            errorhandler.logdebug("request_rows: row: 0, count 1:, ID:{}".format(self.m_last_request_ID))
 
         self.m_last_action_time = current_time()
         self.m_next_action_time = self.m_last_action_time + self.REQUEST_ROWS_TIMEOUT
