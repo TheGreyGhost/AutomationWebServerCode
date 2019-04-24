@@ -201,6 +201,8 @@ class HistoricalData:
         self.m_rows_requested = range_to_fetch[1] - range_to_fetch[0]
         self.m_rows_received = 0
         self.m_messager.request_rows(range_to_fetch[0], self.m_rows_requested, self.m_last_request_ID)
+        if debugdefines.historicaldata:
+            errorhandler.logdebug("request_rows start:{} number:{} ID:{}".format(range_to_fetch[0], self.m_rows_requested, self.m_last_request_ID))
 
         # self.socket_datastream.sendto(b"!l" + self.protocol_version +
         # 							  self.m_last_request_ID.to_bytes(length=1, signed=False) +
