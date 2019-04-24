@@ -41,9 +41,9 @@ class ArduinoMessager:
 
     def request_rows(self, first_row_idx, row_count, request_ID):
         self.m_socket.sendto(b"!l" + self.m_protocol_version +
-                             request_ID.to_bytes(length=1, signed=False) +
-                             first_row_idx.to_bytes(length=4, signed=False) +
-                             row_count.to_bytes(length=2, signed=False),
+                             request_ID.to_bytes(length=1, byteorder="little", signed=False) +
+                             first_row_idx.to_bytes(length=4, byteorder="little", signed=False) +
+                             row_count.to_bytes(length=2, byteorder="little", signed=False),
                              self.m_ip_port_arduino)
 
     def check_for_incoming_msg(self):
