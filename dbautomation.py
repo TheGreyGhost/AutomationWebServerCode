@@ -1,6 +1,7 @@
 import mysql.connector
 import errorhandler
 import time
+import debugdefines
 
 class DBautomation:
     m_cnx_fifo = None
@@ -95,7 +96,8 @@ class DBautomation:
                         values = values + "," + "%(" + key + ")s"
                 insertSQL = "INSERT IGNORE INTO {tablename} ({fieldnames}) VALUES ({values});" \
                     .format(tablename=self.m_tablename_trans, fieldnames=fieldnames, values=values)
-                errorhandler.logdebug("INSERT:{}".format(insertSQL))
+                if debugdefines.sql:
+                    errorhandler.logdebug("INSERT:{}".format(insertSQL))
                 self.m_cursor_trans.execute(insertSQL, data)
 
             except mysql.connector.Error as err:
@@ -146,7 +148,8 @@ class DBautomation:
                     values = values + "," + "%(" + key + ")s"
             insertSQL = "INSERT INTO {tablename} ({fieldnames}) VALUES ({values});"\
                 .format(tablename=tablename, fieldnames=fieldnames, values=values)
-            errorhandler.logdebug("INSERT:{}".format(insertSQL))
+            if debugdefines.sql:
+                errorhandler.logdebug("INSERT:{}".format(insertSQL))
             self.m_cursor_fifo.execute(insertSQL, datacopy)
 
             findrowcountSQL = "SELECT entry_number FROM {tablename} "\
