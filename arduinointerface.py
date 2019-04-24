@@ -292,7 +292,7 @@ Each response is a single UDP packet only.
             self.m_historicaldata.received_data(msg, data[3:-1])
         elif data[1:2] == b"n":
             msg = self.parse_message("NumberOfLogfileEntries", data[3:-1])
-            self.m_historicaldata.received_rowcount(msg["data_request_ID"])
+            self.m_historicaldata.received_rowcount(msg["number_of_logfile_entries"])
         else:
             raise errorhandler.ArduinoMessageError("invalid response command letter: {}".format(hex(data[1])))
 
