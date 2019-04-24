@@ -85,7 +85,7 @@ class HistoricalData:
             self.find_gaps_and_request()
         elif self.m_current_state is CurrentStates.WAITING_FOR_ROWS:
             self.m_rows_received += 1
-            datacopy = data_entry._asdict()
+            datacopy = dict(data_entry)
             datacopy.pop("data_request_ID", None)
             datacopy["datastore_hash"] = self.m_fingerprint
             self.m_dbautomation.add_data_to_transaction(datacopy)
