@@ -78,7 +78,7 @@ class HistoricalData:
             errorhandler.loginfo("drop datarow with ID {}".format(data_request_ID))
             return
         if self.m_current_state is CurrentStates.WAITING_FOR_FIRST_ROW:
-            rownumber = int(data_entry.row_number)
+            rownumber = int(data_entry["row_number"])
             if rownumber != 0:
                 errorhandler.loginfo("unexpected packet: asked for row 0 and received row {}".format(rownumber))
             self.m_fingerprint = binascii.crc32(rawdata[1:])
