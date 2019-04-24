@@ -35,12 +35,11 @@ class HistoricalData:
 
 	ROW_FETCH_CHUNK_SIZE = 100 # fetch this many rows of data at once
 
-	def __init__(self, dbautomation, configuration, messager):
+	def __init__(self, dbautomation, configuration):
 		self.m_dbautomation = dbautomation
 		self.m_configuration = configuration
-		self.m_tablename = configuration.get["LogDataRow"]["tablename"]
+		self.m_tablename = configuration.get["LogfileEntry"]["tablename"]
 		self.m_databasefill = DatabaseFill(dbautomation, self.m_tablename)
-		self.m_messager = messager
 		self.m_protocol_version = bytes(configuration.get["DataTransfer"]["ProtocolVersion"][0], 'utf-8')
 
 		hcfg = configuration.get["HISTORY"]
@@ -52,6 +51,9 @@ class HistoricalData:
 
 		self.m_last_action_time = current_time()
 		self.m_next_action_time = self.m_last_action_time
+
+	def set_messager(self, i_messager):
+		self.m_messager = i_messager
 
 	def request_row_count(self):
 		"""

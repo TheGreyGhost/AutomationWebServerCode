@@ -6,6 +6,7 @@ from collections import namedtuple
 from dbautomation import DBautomation
 import math
 import truetime
+from historicaldata import HistoricalData
 
 MAX_EXPECTED_MSG_SIZE = 1024
 
@@ -120,9 +121,14 @@ for parameter:
 native byte stream of all EEPROM settings
 
 for logfile:
-!l -> the byte stream from the log file itself, one entry per packet, with !d as command prefix, then
-  !l when byte stream is finished
-!n -> dword number of entries in log file
+!l -> the byte stream from the log file itself, one entry per packet:
+  !d{byte request ID}{dword row nr}{native byte stream of:
+        // timestamp; min, avg, max for each temp probe; cumulative insolation; cumulative pump runtime (s); averaged surge tank level; pumpState
+        const unsigned long DATALOG_BYTES_PER_SAMPLE = sizeof(long) + NUMBER_OF_PROBES * 3 * sizeof(float) + sizeof(float) + sizeof(float) + sizeof(float) + sizeof(PumpState);
+  and finally:
+  !l{byte request ID} when byte stream is finished
+!n{dword number of entries in log file}
+!c{byte request ID}
 
 The final byte in the packet is {byte status: 0 = ok, else error code}
 Each response is a single UDP packet only.
@@ -141,7 +147,8 @@ Each response is a single UDP packet only.
     protocol_version = None
 
     db_realtime = None
-    db_history = None
+#    db_history = None
+    m_historicaldata = None
 
     max_realtime_rows = 1
     test_message_response = None
@@ -177,15 +184,15 @@ Each response is a single UDP packet only.
                                         )
         self.max_realtime_rows = realtime_info.getint("max_rows")
 
-        self.db_history = DBautomation(history_info["user"], history_info["password"], database_info["HostAddress"],
-                                       database_info.getint("HostPort"), history_info["databasename"]
-                                       )
+        # self.db_history = DBautomation(history_info["user"], history_info["password"], database_info["HostAddress"],
+        #                                database_info.getint("HostPort"), history_info["databasename"]
+        #                                )
         truetime_info = i_configuration.get["TimeServer"]
         self.true_time = truetime.TrueTime(truetime_info.getint("max_timeout_seconds"))
 
 
-    def __enter__(self):
-        return self
+    # def __enter__(self):
+    #     return self
 
     # def __exit__(self, exc_type, exc_val, exc_tb):
     #     # make sure the objects get closed
@@ -193,6 +200,9 @@ Each response is a single UDP packet only.
     #         self.socket_datastream.close()
     #     if not self.socket_terminal is None:
     #         self.socket_terminal.close()
+
+    def set_historicaldata(self, i_historicaldata):
+        self.m_historicaldata = i_historicaldata
 
     def request_realtime_info(self):
         """
@@ -269,13 +279,20 @@ Each response is a single UDP packet only.
             msg = self.parse_message("TimeSynchronisation", data[3:-1])
             errorhandler.loginfo("Time synch reply:{}".format(msg))
         elif data[1:2] == b"p":
-            self.parse_message("ParameterInformation", data[3:-1])
+            pass  # NOT IMPLEMENTED YET
+            # self.parse_message("ParameterInformation", data[3:-1])
         elif data[1:2] == b"l":
-            self.parse_message("LogfileComplete", data[3:-1])
+            msg = self.parse_message("LogfileCancel", data[3:-1])
+            self.m_historicaldata.received_cancel(msg.data_request_ID)
+        elif data[1:2] == b"c":
+            msg = self.parse_message("LogfileComplete", data[3:-1])
+            self.m_historicaldata.received_end_of_data(msg.data_request_ID)
         elif data[1:2] == b"d":
-            self.parse_message("LogfileEntry", data[3:-1])
+            msg = self.parse_message("LogfileEntry", data[3:-1])
+            self.m_historicaldata.received_data(msg, data[3:-1])
         elif data[1:2] == b"n":
-            self.parse_message("NumberOfLogfileEntries", data[3:-1])
+            msg = self.parse_message("NumberOfLogfileEntries", data[3:-1])
+            self.m_historicaldata.received_rowcount(msg.number_of_logfile_entries)
         else:
             raise errorhandler.ArduinoMessageError("invalid response command letter: {}".format(hex(data[1])))
 

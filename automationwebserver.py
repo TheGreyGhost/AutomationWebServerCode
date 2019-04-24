@@ -38,7 +38,9 @@ def poll_arduino_loop():
     db_history = DBautomation(history_info["user"], history_info["password"], database_info["HostAddress"],
                               database_info.getint("HostPort"), history_info["databasename"]
                               )
-    hd = HistoricalData(db_history, configuration, arduino.m_messager_datastream)
+    hd = HistoricalData(db_history, configuration)
+    hd.set_messager(arduino.m_messager_datastream)
+    arduino.set_historicaldata(hd)
 
     while True:
         hd.tick()
