@@ -284,10 +284,10 @@ Each response is a single UDP packet only.
         elif data[1:2] == b"p":
             pass  # NOT IMPLEMENTED YET
             # self.parse_message("ParameterInformation", data[3:-1])
-        elif data[1:2] == b"l":
+        elif data[1:2] == b"c":
             msg = self.parse_message("LogfileCancel", data[3:-1])
             self.m_historicaldata.received_cancel(msg["data_request_ID"])
-        elif data[1:2] == b"c":
+        elif data[1:2] == b"l":
             msg = self.parse_message("LogfileComplete", data[3:-1])
             self.m_historicaldata.received_end_of_data(msg["data_request_ID"])
         elif data[1:2] == b"d":
