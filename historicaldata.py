@@ -88,6 +88,7 @@ class HistoricalData:
             if rownumber != 0:
                 errorhandler.loginfo("unexpected packet: asked for row 0 and received row {}".format(rownumber))
             self.m_fingerprint = binascii.crc32(rawdata[1:])
+            self.m_dbautomation.end_transaction()
             self.find_gaps_and_request()
         elif self.m_current_state is CurrentStates.WAITING_FOR_ROWS:
             self.m_rows_received += 1
@@ -118,7 +119,8 @@ class HistoricalData:
             errorhandler.logdebug("received_end_of_data ID:{}".format(dataSequenceID))
         if dataSequenceID != self.m_last_request_ID:
             return
-        self.m_dbautomation.end_transaction()
+        if self.m_current_state is CurrentStates.WAITING_FOR_ROWS:
+            self.m_dbautomation.end_transaction()  # not required if we asked for first row fingerprint, cause already done
         if self.m_rows_received == self.m_rows_requested:
             self.find_gaps_and_request()
         else:
